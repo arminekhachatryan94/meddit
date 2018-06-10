@@ -43,7 +43,7 @@ class PostsController extends Controller
         };
     }
 
-    public function edit( Request $request, $id ) {
+    public function edit(Request $request, $id) {
         $req = [
             'user_id' => $request->input('user_id'),
             'title' => $request->input('title'),
@@ -73,6 +73,31 @@ class PostsController extends Controller
                     'invalid' => 'Post not found'
                 ]
             ], 401);
+        }
+    }
+
+    public function delete(Request $request, $id) {
+        $post = Post::find($id);
+
+        if( $post ){
+            if( $post->user_id == $request->user_id ){
+                $post->delete();
+                return response()->json([
+                    'post' => 'Post was successfully deleted'
+                ]);
+            } else {
+                return response()->json([
+                    'errors' => [
+                        'invalid' => 'You do not have permission to delete this post'
+                    ]
+                ]);
+            }
+        } else {
+            return response()->json([
+                'errors' => [
+                    'invalid' => 'Post does not exist'
+                ]
+            ]);
         }
     }
 }
