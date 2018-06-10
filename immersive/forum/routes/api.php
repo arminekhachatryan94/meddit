@@ -21,3 +21,4 @@ Route::post('/register', 'Auth\RegisterController@register')->name('register');
 Route::post('/login', 'Auth\LoginController@login')->name('login');
 
 Route::get('/posts', 'PostsController@posts')->name('posts');
+Route::post('/new-post', 'PostsController@create')->name('create-post');
