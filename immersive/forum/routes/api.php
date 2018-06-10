@@ -24,3 +24,5 @@ Route::get('/posts', 'PostsController@posts')->name('posts');
 Route::post('/new-post', 'PostsController@create')->name('create-post');
 Route::put('/posts/{id}', 'PostsController@edit')->name('edit-post');
 Route::delete('/posts/{id}', 'PostsController@delete')->name('delete-post');
+
+Route::post('/posts/{id}/new-comment', 'CommentsController@create')->name('create-comment');
