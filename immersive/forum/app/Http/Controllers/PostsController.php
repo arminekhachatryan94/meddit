@@ -28,8 +28,17 @@ class PostsController extends Controller
     }
 
     public function posts() {
+        $posts = Post::all();
+        foreach ( $posts as $post){
+            $post->comments;
+            $post->user;
+            foreach ( $post->comments as $comment ){
+                $comment->user;
+            }
+        }
+
         return response()->json([
-            'posts' => Post::all()
+            'posts' => $posts
         ]);
     }
 
