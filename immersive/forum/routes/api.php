@@ -22,3 +22,4 @@ Route::post('/login', 'Auth\LoginController@login')->name('login');
 
 Route::get('/posts', 'PostsController@posts')->name('posts');
 Route::post('/new-post', 'PostsController@create')->name('create-post');
+Route::put('/posts/{id}', 'PostsController@edit')->name('edit-post');

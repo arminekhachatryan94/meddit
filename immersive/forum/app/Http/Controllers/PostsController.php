@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Post;
+use App\User;
 use Validator;
 
 class PostsController extends Controller
@@ -40,5 +41,38 @@ class PostsController extends Controller
         } else {
             return response()->json([ 'errors' => $errors ], 401);
         };
+    }
+
+    public function edit( Request $request, $id ) {
+        $req = [
+            'user_id' => $request->input('user_id'),
+            'title' => $request->input('title'),
+            'body' => $request->input('body')
+        ];
+
+        $post = Post::find($id);
+        if( $post ){
+            $errors = $this->validator($request->all())->errors();
+            if( count($errors) ) {
+                return response()->json([
+                    'errors' => $errors
+                ], 401);
+            } else {
+                if( $post->user_id == $request->input('user_id') ){
+                    $post->title = $request->input('title');
+                    $post->body = $request->input('body');
+                    $post->save();
+                    return response()->json(['post' => $post], 201);
+                } else {
+                    return response()->json(['errors' => ['invalid' => 'You do not have permission to edit this post']], 401);
+                }
+            }
+        } else {
+            return response()->json([
+                'errors' => [
+                    'invalid' => 'Post not found'
+                ]
+            ], 401);
+        }
     }
 }
