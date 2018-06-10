@@ -89,6 +89,8 @@
                     <a href="https://forge.laravel.com">Forge</a>
                     <a href="https://github.com/laravel/laravel">GitHub</a>
                 </div>
+
+                <img src="{{ asset('img/dolphin.jpg') }}" alt="dolphin" height="200">
             </div>
         </div>
     </body>
