@@ -39,7 +39,22 @@ class PostsController extends Controller
 
         return response()->json([
             'posts' => $posts
-        ]);
+        ], 201);
+    }
+
+    public function post($id) {
+        $post = Post::where('id', $id)->get();
+        if( !count($post) ){
+            return response()->json([
+                'errors' => [
+                    'invalid' => 'Post does not exist'
+                ]
+            ], 401);
+        } else {
+            return response()->json([
+                'post' => $post
+            ], 201);
+        }
     }
 
     public function create(Request $request) {
@@ -93,20 +108,20 @@ class PostsController extends Controller
                 $post->delete();
                 return response()->json([
                     'post' => 'Post was successfully deleted'
-                ]);
+                ], 201);
             } else {
                 return response()->json([
                     'errors' => [
                         'invalid' => 'You do not have permission to delete this post'
                     ]
-                ]);
+                ], 401);
             }
         } else {
             return response()->json([
                 'errors' => [
                     'invalid' => 'Post does not exist'
                 ]
-            ]);
+            ], 401);
         }
     }
 }
