@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\User;
 use App\Description;
+use App\UserRole;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -79,6 +80,12 @@ class RegisterController extends Controller
             'user_id' => $user->id,
             'description' => ''
         ]);
+
+        $role = UserRole::create([
+            'user_id' => $user->id,
+            'role' => 0
+        ]);
+        
         return $user;
     }
 
