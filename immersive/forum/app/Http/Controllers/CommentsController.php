@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Comment;
+use App\Post;
 use Validator;
 
 class CommentsController extends Controller
@@ -36,5 +37,30 @@ class CommentsController extends Controller
         } else {
             return response()->json([ 'errors' => $errors ], 401);
         };
+    }
+
+    public function delete(Request $request, $comment) {
+        $comment2 = Comment::find($comment);
+
+        if( $comment2 ){
+            if( $comment2->user_id == $request->user_id ){
+                $comment2->delete();
+                return response()->json([
+                    'comment' => 'Comment was successfully deleted'
+                ], 201);
+            } else {
+                return response()->json([
+                    'errors' => [
+                        'invalid' => 'You do not have permission to delete this post'
+                    ]
+                ], 401);
+            }
+        } else {
+            return response()->json([
+                'errors' => [
+                    'invalid' => 'Comment does not exist'
+                ]
+            ], 401);
+        }
     }
 }
