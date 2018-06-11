@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Comment;
 use App\Post;
+use App\User;
 use Validator;
 
 class CommentsController extends Controller
@@ -13,7 +14,7 @@ class CommentsController extends Controller
         return Validator::make($data, [
             'post_id' => 'required',
             'user_id' => 'required',
-            'body' => 'required|string|max:255'
+            'body' => 'required|max:255'
         ]);
     }
     protected function save(array $data) {
@@ -30,10 +31,28 @@ class CommentsController extends Controller
             'user_id' => $request->input('user_id'),
             'body' => $request->input('body')
         ];
+
         $errors = $this->validator($req)->errors();
+
         if( count($errors) == 0 ){
-            $comment = $this->save($req);
-            return response()->json([ 'comment' => $comment ], 201);
+            $post = Post::where('id', $id)->exists();
+            $user = User::where('id', $id)->exists();
+            if( $post && $user ){
+                $comment = $this->save($req);
+                return response()->json([ 'comment' => $comment ], 201);
+            } else if( !$post ) {
+                return response()->json([
+                    'errors' => [
+                        'invalid' => 'Post does not exist'
+                    ]
+                ], 401);
+            } else {
+                return response()->json([
+                    'errors' => [
+                        'invalid' => 'User does not exist'
+                    ]
+                ], 401);
+            }
         } else {
             return response()->json([ 'errors' => $errors ], 401);
         };
