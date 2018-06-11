@@ -39,6 +39,41 @@ class CommentsController extends Controller
         };
     }
 
+    public function edit(Request $request, $comment) {
+        $comment2 = Comment::find($comment);
+
+        if( $comment2 ) {
+            if( $comment2->user_id == $request->input('user_id') ){
+                $errors = Validator::make(
+                    ['body' => $request->input('body')],
+                    ['body' => 'required|string|max:255'])->errors();
+                if( count($errors) == 0 ){
+                    $comment2->body = $request->input('body');
+                    $comment2->save();
+                    return response()->json([
+                        'comment' => $comment2
+                    ], 201);
+                } else {
+                    return response()->json([
+                        'errors' => $errors
+                    ], 401);
+                }
+            } else {
+                return response()->json([
+                    'errors' => [
+                        'invalid' => 'You do not have permission to delete this post'
+                    ]
+                ], 401);
+            }
+        } else {
+            return response()->json([
+                'errors' => [
+                    'invalid' => 'Comment does not exist'
+                ]
+            ], 401);
+        }
+    }
+
     public function delete(Request $request, $comment) {
         $comment2 = Comment::find($comment);
 
