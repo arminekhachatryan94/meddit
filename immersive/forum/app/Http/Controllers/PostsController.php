@@ -60,8 +60,17 @@ class PostsController extends Controller
     public function create(Request $request) {
         $errors = $this->validator($request->all())->errors();
         if( count($errors) == 0 ){
-            $post = $this->save($request->all());
-            return response()->json([ 'post' => $post ], 201);
+            $post = User::where('id', $request->input('user_id'))->exists();
+            if( $post ){
+                $newpost = $this->save($request->all());
+                return response()->json([ 'post' => $newpost ], 201);
+            } else {
+                return response()->json([
+                    'errors' => [
+                        'invalid' => 'User does not exist'
+                    ]
+                ], 401);
+            }
         } else {
             return response()->json([ 'errors' => $errors ], 401);
         };
