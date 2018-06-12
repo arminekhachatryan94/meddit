@@ -10,7 +10,11 @@ class Description extends Model
         'user_id', 'description'
     ];
 
-	public function user(){
-		return $this->belongsTo(User::class);
+    protected $hidden = [
+        'id', 'user_id', 'created_at', 'updated_at'
+    ];
+
+	public function user() {
+        return $this->belongsTo(User::class);
     }
 }

@@ -2,13 +2,10 @@
 
 namespace App;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 
-class User extends Authenticatable
+class User extends Model
 {
-    use Notifiable;
-
     /**
      * The attributes that are mass assignable.
      *
@@ -26,4 +23,21 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    protected $appends = [
+        'description'
+    ];
+
+    public function getDescriptionAttribute() {
+        $bio = Description::where('user_id', $this->id)->get();
+        return $bio[0]->description;
+    }
+
+    public function biography() {
+    	return $this->hasOne(Description::class);
+    }
+
+    public function role() {
+        return $this->belongsTo(UserRole::class);
+    }
 }
