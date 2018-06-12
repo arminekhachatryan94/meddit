@@ -25,7 +25,7 @@ class User extends Model
     ];
 
     protected $appends = [
-        'biography'
+        'biography', 'role'
     ];
 
     public function getBiographyAttribute() {
@@ -33,7 +33,9 @@ class User extends Model
         return $bio[0]->description;
     }
 
-    public function role() {
-        return $this->belongsTo(UserRole::class);
+    public function getRoleAttribute() {
+        $role = UserRole::where('user_id', $this->id)->get();
+        return $role[0]->role;
     }
+
 }
