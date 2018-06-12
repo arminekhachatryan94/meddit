@@ -115,7 +115,8 @@ class PostsController extends Controller
         $post = Post::find($id);
 
         if( $post ){
-            if( $post->user_id == $request->user_id ){
+            $user = User::where('id', $request->input('user_id'))->latest();
+            if( $post->user_id == $request->user_id || $user->role == 1 ){
                 $post->delete();
                 return response()->json([
                     'post' => 'Post was successfully deleted'

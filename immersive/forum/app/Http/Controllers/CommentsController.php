@@ -97,7 +97,8 @@ class CommentsController extends Controller
         $comment2 = Comment::find($comment);
 
         if( $comment2 ){
-            if( $comment2->user_id == $request->user_id ){
+            $user = User::where('id', $request->input('user_id'))->first();
+            if( $comment2->user_id == $request->user_id || $user->role == 1 ){
                 $comment2->delete();
                 return response()->json([
                     'comment' => 'Comment was successfully deleted'
@@ -105,7 +106,7 @@ class CommentsController extends Controller
             } else {
                 return response()->json([
                     'errors' => [
-                        'invalid' => 'You do not have permission to delete this post'
+                        'invalid' => 'You do not have permission to delete this comment'
                     ]
                 ], 401);
             }
