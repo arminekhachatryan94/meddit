@@ -33,3 +33,5 @@ Route::delete('/comments/{comment}', 'CommentsController@delete')->name('delete-
 Route::get('/{id}/settings', 'SettingsController@settings')->name('settings');
 Route::put('/{id}/settings/username', 'SettingsController@username')->name('edit-username');
 Route::put('/{id}/settings/biography', 'SettingsController@biography')->name('edit-biography');
+
+Route::get('/{id}/users', 'UserRolesController@users')->name('users');
