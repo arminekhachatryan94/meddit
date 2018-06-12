@@ -25,16 +25,12 @@ class User extends Model
     ];
 
     protected $appends = [
-        'description'
+        'biography'
     ];
 
-    public function getDescriptionAttribute() {
-        $bio = Description::where('user_id', $this->id)->get();
+    public function getBiographyAttribute() {
+        $bio = Biography::where('user_id', $this->id)->get();
         return $bio[0]->description;
-    }
-
-    public function biography() {
-    	return $this->hasOne(Description::class);
     }
 
     public function role() {

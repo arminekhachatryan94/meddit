@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
-use App\Description;
+use App\Biography;
 use App\UserRole;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -76,7 +76,7 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
         ]);
 
-        $description = Description::create([
+        $biography = Biography::create([
             'user_id' => $user->id,
             'description' => ''
         ]);
