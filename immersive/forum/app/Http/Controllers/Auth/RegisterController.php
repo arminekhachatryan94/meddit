@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
+use Mail;
 
 class RegisterController extends Controller
 {
@@ -85,7 +86,13 @@ class RegisterController extends Controller
             'user_id' => $user->id,
             'role' => 0
         ]);
-        
+
+        Mail::send('emails.registration', ['user' => $user], function ($mail) use ($user) {
+            $mail->from('info@meatlabs.com', 'MEAT Labs');
+
+            $mail->to($user->email, $user->name)->subject('Thanks for registering!');
+        });
+
         return $user;
     }
 
