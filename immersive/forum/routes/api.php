@@ -36,3 +36,4 @@ Route::put('/{id}/settings/biography', 'SettingsController@biography')->name('ed
 
 Route::get('/{id}/users', 'UserRolesController@users')->name('users');
 Route::put('/{id}/users', 'UserRolesController@edit')->name('edit-user-roles');
+Route::delete('/{id}/users', 'UserRolesController@delete')->name('delete-user');
