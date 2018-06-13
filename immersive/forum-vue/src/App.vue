@@ -4,12 +4,6 @@
     <main>
       <router-view/>
     </main>
-    <h1 class="display-1">Hello WOrld</h1>
-    <h1 class="display-1">Hello WOrld</h1>
-    <h1 class="display-1">Hello WOrld</h1>
-    <h1 class="display-1">Hello WOrld</h1>
-    <h1 class="display-1">Hello WOrld</h1>
-
   </div>
 </template>
 
