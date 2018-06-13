@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\UserRole;
 use Validator;
+use Mail;
 
 class UserRolesController extends Controller
 {
@@ -87,6 +88,13 @@ class UserRolesController extends Controller
                     $user2 = User::where('id', $request->input('user_id'))->first();
                     if( $user2 ){
                         $user2->delete();
+
+                        Mail::send('emails.deletion', ['user' => $user2], function ($mail) use ($user2) {
+                            $mail->from('info@meatlabs.com', 'MEAT Labs');
+                
+                            $mail->to($user2->email, $user2->name)->subject('Account was deleted!');
+                        });
+                
                         return response()->json([
                             'message' => 'User with id of '. $user2->user_id . 'has successfully been deleted'
                         ], 201);
