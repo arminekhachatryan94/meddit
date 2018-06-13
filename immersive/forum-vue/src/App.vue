@@ -1,23 +1,36 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <router-view/>
+    <navbar></navbar>
+    <main>
+      <router-view/>
+    </main>
+    <h1 class="display-1">Hello WOrld</h1>
+    <h1 class="display-1">Hello WOrld</h1>
+    <h1 class="display-1">Hello WOrld</h1>
+    <h1 class="display-1">Hello WOrld</h1>
+    <h1 class="display-1">Hello WOrld</h1>
+
   </div>
 </template>
 
 <script>
+import Navbar from './components/Navbar'
+
 export default {
-  name: 'App'
+  name: 'App',
+  components: { Navbar }
 }
 </script>
 
-<style>
+<style scoped>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smooth1ng: antialiased;
+  -moz-osx-font-smooth1ng: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+}
+
+main {
+  padding-top: 60px;
 }
 </style>
