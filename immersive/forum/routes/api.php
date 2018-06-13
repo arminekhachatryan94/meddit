@@ -35,3 +35,4 @@ Route::put('/{id}/settings/username', 'SettingsController@username')->name('edit
 Route::put('/{id}/settings/biography', 'SettingsController@biography')->name('edit-biography');
 
 Route::get('/{id}/users', 'UserRolesController@users')->name('users');
+Route::put('/{id}/users', 'UserRolesController@edit')->name('edit-user-roles');
