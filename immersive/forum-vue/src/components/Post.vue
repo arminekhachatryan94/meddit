@@ -1,20 +1,37 @@
 <template>
 <div class="post-container bg-white text-left">
-    <div v-text="this.title" class="title"></div>
-    <div class="container2">
-        <div class="text-gray user-date">
-            <!-- view body -->
-            <a href="#" class="text-gray">[-]</a>
-            <a href="#" class="username padding-r-5"><b>{{this.user.username}}</b></a>
-            <i :id="'time' + this.id" data-toggle="tooltip">{{this.timeAgo()}}</i>
-        </div>
-        <div v-text="this.body" class="body"></div>
-        <div>
-            <a href="comments" class="ops">comments</a>
-            <a href="#" class="ops">edit</a>
-            <a href="#" class="ops">delete</a>
+    <div v-if="!this.editing">
+        <div v-text="this.title" class="title"></div>
+        <div class="container2">
+            <div class="text-gray user-date">
+                <!-- view body -->
+                <a @click="showBody" :id="'op' + this.id" class="text-gray">[-]</a>
+                <a href="#" class="username padding-r-5"><b>{{this.user.username}}</b></a>
+                <i :id="'time' + this.id" data-toggle="tooltip">{{this.timeAgo()}}</i>
+            </div>
+            <div v-if="this.show_body" v-text="this.body" class="body"></div>
+            <div>
+                <a href="#" @click.prevent="showComments()" class="ops">comments</a>
+                <a href="#" @click.prevent="editPost()" class="ops">edit</a>
+                <a href="#" @click.prevent="deletePost()" class="ops">delete</a>
+            </div>
+            <div v-if="show_comments">
+            </div>
         </div>
     </div>
+    <div v-if="this.editing">
+        <form method="PUT" @submit.prevent="savePost">
+            <div class="form-group">
+                <input v-model="newpost.title" name="title" type="text" required>
+            </div>
+            <div class="form-group">
+                <textarea v-model="newpost.body" name="body" required></textarea>
+            </div>
+            <button type="submit">Save</button>
+        </form>
+    </div>
+    <div v-text="newpost.title"></div>
+    <div v-text="newpost.body"></div>
 </div>
 </template>
 
@@ -33,7 +50,13 @@ export default {
   },
   data () {
     return {
-      editing: false
+      editing: false,
+      show_body: true,
+      show_comments: false,
+      newpost: {
+        title: this.title,
+        body: this.body
+      }
     }
   },
   methods: {
@@ -42,6 +65,39 @@ export default {
     },
     time: function () {
       document.getElementById('time' + this.id).title = moment(this.dateTime).format('MMMM DD YYYY, h:mma')
+    },
+    showBody: function () {
+      var op = document.getElementById('op' + this.id)
+      if (this.show_body) {
+        op.innerHTML = '[+]'
+        this.show_body = false
+      } else {
+        op.innerHTML = '[-]'
+        this.show_body = true
+      }
+    },
+    showComments: function () {
+      if (this.show_comments) {
+        this.show_comments = false
+      } else {
+        this.show_comments = true
+      }
+    },
+    editPost: function () {
+      if (this.editing) {
+        this.editing = false
+      } else {
+        this.editing = true
+        this.newpost.title = this.title
+        this.newpost.body = this.body
+      }
+    },
+    savePost: function () {
+      this.editing = false
+      alert('Post saved')
+    },
+    deletePost: function () {
+        alert('Post successfully deleted')
     }
   },
   mounted () {
