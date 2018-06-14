@@ -1,5 +1,5 @@
 {
-  "name": "meat-labs",
+  "name": "meddit",
   "version": "1.0.0",
   "description": "META+Lab Summer Immersive Project",
   "author": "Armine Khachatryan <armine.khachatryan94@yahoo.com>",
@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "moment": "^2.22.2",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },

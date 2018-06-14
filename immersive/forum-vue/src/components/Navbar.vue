@@ -11,12 +11,16 @@
             <router-link :to="{ name: '' }" class="page text-black" id="userroles" @click.native="onClick('userroles')">USER ROLES</router-link>
         </span>
         <span class="col-md-6 text-right">
+            <router-link :to="{ name: '' }" class="page text-black" id="login" @click.native="onClick('login')">LOGIN</router-link>
+            <div class="symbol">&#183;</div>
+            <router-link :to="{ name: '' }" class="page text-black" id="register" @click.native="onClick('register')">REGISTER</router-link>
+            <div class="symbol">&#183;</div>
             <router-link :to="{ name: '' }" class="page text-black" id="settings" @click.native="onClick('settings')">SETTINGS</router-link>
             <div class="symbol">&#183;</div>
             <router-link :to="{ name: '' }">LOG OUT</router-link>
         </span>
     </div>
-    <div class="bottom-nav text-left">
+    <div class="bottom-nav text-left" @click="home()">
         <img src="../assets/reddit-logo.png" width="28px">
         <span class="font-meddit center-in">meddit</span>
     </div>
@@ -41,22 +45,30 @@ export default {
     onClick: function (page) {
       var pages = document.getElementsByClassName('page')
       for (var i = 0; i < pages.length; i++) {
-        pages[i].style.color = "black"
+        pages[i].style.color = 'black'
+        pages[i].style.fontWeight = 'normal'
       }
-      document.getElementById(page).style.color = "orange"
+      var style = document.getElementById(page).style
+      style.color = 'orange'
+      style.fontWeight = 'bold'
+    },
+    home: function () {
+      this.onClick('home')
+      this.$router.replace('/')
     }
   },
-  mounted() {
+  mounted () {
     var hash = window.location.hash
-    var page;
+    var page
     for (var i = 0; i < this.pages.length; i++) {
-        if (this.pages[i][0] == hash) {
-            page = this.pages[i][1];
-            break;
-        }
+      if (this.pages[i][0] == hash) {
+        page = this.pages[i][1]
+        break
+      }
     }
-    document.getElementById(page).style.color = "orange"
-
+    var style = document.getElementById(page).style
+    style.color = 'orange'
+    style.fontWeight = 'bold'
   }
 }
 </script>
@@ -64,7 +76,6 @@ export default {
 <style scoped>
 nav {
     position: fixed;
-    padding: 5px;
     width: 100%;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     color: black;

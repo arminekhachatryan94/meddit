@@ -23,8 +23,7 @@ export default {
   -moz-osx-font-smooth1ng: grayscale;
   text-align: center;
 }
-
 main {
-  padding-top: 60px;
+  padding-top: 80px;
 }
 </style>
