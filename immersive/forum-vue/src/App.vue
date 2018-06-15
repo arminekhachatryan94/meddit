@@ -1,18 +1,32 @@
 <template>
   <div id="app">
-    <navbar></navbar>
-    <main>
-      <router-view/>
+    <navbar class="z-top"></navbar>
+    <!-- if logged in -->
+    <main class="col-md-12 row">
+      <div class="col-md-9">
+        <router-view/>
+        <div class="display-1">Hi</div>
+        <div class="display-1">Hi</div>
+        <div class="display-1">Hi</div>
+        <div class="display-1">Hi</div>
+
+      </div>
+      <div class="col-md-3">
+        <profile class="z-top"></profile>
+      </div>
     </main>
+
+    <!-- if not logged in -->
   </div>
 </template>
 
 <script>
 import Navbar from './components/Navbar'
+import Profile from './components/Profile'
 
 export default {
   name: 'App',
-  components: { Navbar }
+  components: { Navbar, Profile }
 }
 </script>
 
@@ -24,6 +38,9 @@ export default {
   text-align: center;
 }
 main {
-  padding-top: 80px;
+  padding-top: 70px;
+}
+.z-top {
+  z-index: 1;
 }
 </style>

@@ -16,6 +16,10 @@
                 <a href="#" @click.prevent="deletePost()" class="ops">delete</a>
             </div>
             <div v-if="show_comments">
+              <div v-for="comment in comments"
+                :key="comment.id">
+                <div v-text="comment.body"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -30,8 +34,6 @@
             <button type="submit">Save</button>
         </form>
     </div>
-    <div v-text="newpost.title"></div>
-    <div v-text="newpost.body"></div>
 </div>
 </template>
 
@@ -97,7 +99,7 @@ export default {
       alert('Post saved')
     },
     deletePost: function () {
-        alert('Post successfully deleted')
+      alert('Post successfully deleted')
     }
   },
   mounted () {
@@ -108,11 +110,10 @@ export default {
 
 <style scoped>
 .post-container {
-    /* box-shadow: 2px 2px lightgray; */
+    box-shadow: 2px 2px lightgray;
     border-radius: 5px;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-    margin-left: 40px;
-    margin-right: 40px;
+    margin-left: 30px;
     padding: 7px;
     padding-top: 5px;
 }
