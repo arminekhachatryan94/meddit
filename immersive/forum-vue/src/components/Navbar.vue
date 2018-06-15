@@ -2,27 +2,30 @@
 <nav>
     <div class="top-nav row fixed col-md-12">
         <span class="col-md-6 text-left">
-            <router-link :to="{ name: 'Home' }" class="page text-black" id="home" v-on:click.native="onClick('home')">HOME</router-link>
-            <div class="symbol">&#183;</div>
-            <router-link :to="{ name: 'Posts' }" class="page text-black" id="posts" @click.native="onClick('posts')">POSTS</router-link>
-            <div class="symbol">&#183;</div>
-            <router-link :to="{ name: '' }" class="page text-black" id="myposts" @click.native="onClick('myposts')">MY POSTS</router-link>
-            <div class="symbol">&#183;</div>
-            <router-link :to="{ name: '' }" class="page text-black" id="userroles" @click.native="onClick('userroles')">USER ROLES</router-link>
+          <router-link :to="{ name: 'Home' }" class="page text-black" id="home" v-on:click.native="onClick('home')">HOME</router-link>
+          <div class="symbol">&#183;</div>
+          <router-link :to="{ name: 'Posts' }" class="page text-black" id="posts" @click.native="onClick('posts')">POSTS</router-link>
+          <div class="symbol">&#183;</div>
+          <router-link :to="{ name: '' }" class="page text-black" id="myposts" @click.native="onClick('myposts')">MY POSTS</router-link>
+          <div class="symbol">&#183;</div>
+          <router-link :to="{ name: '' }" class="page text-black" id="userroles" @click.native="onClick('userroles')">USER ROLES</router-link>
         </span>
         <span class="col-md-6 text-right">
-            <router-link :to="{ name: '' }" class="page text-black" id="login" @click.native="onClick('login')">LOGIN</router-link>
-            <div class="symbol">&#183;</div>
-            <router-link :to="{ name: '' }" class="page text-black" id="register" @click.native="onClick('register')">REGISTER</router-link>
-            <div class="symbol">&#183;</div>
-            <router-link :to="{ name: '' }" class="page text-black" id="settings" @click.native="onClick('settings')">SETTINGS</router-link>
-            <div class="symbol">&#183;</div>
-            <router-link :to="{ name: '' }">LOG OUT</router-link>
+          <router-link :to="{ name: '' }" class="page text-black" id="login" @click.native="onClick('login')">LOGIN</router-link>
+          <div class="symbol">&#183;</div>
+          <router-link :to="{ name: '' }" class="page text-black" id="register" @click.native="onClick('register')">REGISTER</router-link>
         </span>
     </div>
-    <div class="bottom-nav text-left" @click="home()">
+    <div class="bottom-nav text-left row" @click="home()">
+      <div class="col-md-10 text-left">
         <img src="../assets/navbar/reddit-logo.png" width="28px">
         <span class="font-meddit center-in">meddit</span>
+      </div>
+      <div class="col-md-2 text-right bottom-right-nav text-gray">
+        <div class="inline-block text-dark-blue">username</div>
+        <div class="inline-block text-gray bold">|</div>
+        <router-link :to="{ name: '' }" class="text-dark-blue logout">logout</router-link>
+      </div>
     </div>
 </nav>
 </template>
@@ -74,29 +77,51 @@ export default {
 </script>
 
 <style scoped>
+.inline-block {
+  display: inline-block;
+}
+.bold {
+  font-weight: bold;
+}
 nav {
-    position: fixed;
-    width: 100%;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    color: black;
+  position: fixed;
+  width: 100%;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  color: black;
 }
 .top-nav {
-    background-color: rgb(240, 240, 240);
-    font-size: 10px;
-    border-bottom: 1px solid black;
+  background-color: rgb(240, 240, 240);
+  font-size: 10px;
+  border-bottom: 1px solid black;
 }
 .bottom-nav {
-    background-color: rgb(207, 227, 247);
-    border-bottom: 1px rgb(99, 153, 206) solid;
-    padding: 2px;
+  background-color: rgb(207, 227, 247);
+  border-bottom: 1px rgb(99, 153, 206) solid;
+  padding: 2px;
+}
+.bottom-right-nav{
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 12px;
+  margin-top: 23.2px;
+  background-color: rgb(239, 247, 255);
+  border-top-left-radius: 5px;
 }
 .symbol {
-    display: inline;
+  display: inline;
 }
 .font-meddit {
-    font-size: 23px;
+  font-size: 23px;
 }
 .text-black {
-    color: black;
+  color: black;
+}
+.text-gray {
+  color: gray;
+}
+.text-dark-blue {
+  color: rgb(56, 101, 151)
+}
+.logout {
+  padding-right: 10px;
 }
 </style>

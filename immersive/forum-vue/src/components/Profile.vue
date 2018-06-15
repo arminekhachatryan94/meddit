@@ -8,7 +8,7 @@
         <button class="btn btn-primary w-100">NEW POST</button>
     </div>
     <div class="row">
-        <div class="col-md-3 text-left settings">Settings</div>
+        <div class="col-md-3 text-left settings" @click="settings()">Settings</div>
         <div class="col-md-5"></div>
         <div class="col-md-4 text-right help">&#9432; Help</div>
     </div>
@@ -17,7 +17,16 @@
 
 <script>
 export default {
-  name: 'Profile'
+  name: 'Profile',
+  methods: {
+    settings: function() {
+      var pages = document.getElementsByClassName('page');
+      for (var i = 0; i < pages.length; i++) {
+        pages[i].style.color = 'black'
+        pages[i].style.fontWeight = 'normal'
+      }
+    }
+  }
 }
 </script>
 

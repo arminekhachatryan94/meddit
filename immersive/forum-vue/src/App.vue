@@ -5,11 +5,6 @@
     <main class="col-md-12 row">
       <div class="col-md-9">
         <router-view/>
-        <div class="display-1">Hi</div>
-        <div class="display-1">Hi</div>
-        <div class="display-1">Hi</div>
-        <div class="display-1">Hi</div>
-
       </div>
       <div class="col-md-3">
         <profile class="z-top"></profile>

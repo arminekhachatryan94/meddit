@@ -1,17 +1,21 @@
 <template>
-<div class="post-container bg-white text-left">
-    <div v-if="!this.editing">
+<div class="post-container bg-white text-left row">
+    <div class="col-md-1 padding-top-15">
+      <img src="../assets/posts/chat-bubble.png" width="50">
+    </div>
+    <div v-if="!this.editing" class="col-md-11">
         <div v-text="this.title" class="title"></div>
         <div class="container2">
             <div class="text-gray user-date">
                 <!-- view body -->
-                <a @click="showBody" :id="'op' + this.id" class="text-gray">[-]</a>
+                <a @click="showBody" :id="'op' + this.id" class="text-gray cursor">[-]</a>
                 <a href="#" class="username padding-r-5"><b>{{this.user.username}}</b></a>
                 <i :id="'time' + this.id" data-toggle="tooltip">{{this.timeAgo()}}</i>
             </div>
             <div v-if="this.show_body" v-text="this.body" class="body"></div>
             <div>
-                <a href="#" @click.prevent="showComments()" class="ops">comments</a>
+                <a v-if="comments.length != 1 " href="#" @click.prevent="showComments()" class="ops">{{this.comments.length}} comments</a>
+                <a v-if="comments.length == 1 " href="#" @click.prevent="showComments()" class="ops">{{this.comments.length}} comment</a>
                 <a href="#" @click.prevent="editPost()" class="ops">edit</a>
                 <a href="#" @click.prevent="deletePost()" class="ops">delete</a>
             </div>
@@ -129,6 +133,12 @@ export default {
 .padding-r-5 {
     padding-right: 5px;
 }
+.padding-top-15 {
+  padding-top: 15px;
+}
+.cursor {
+  cursor: pointer;
+}
 
 .title {
     font-size: 15px;
@@ -145,5 +155,9 @@ export default {
     color: gray;
     font-size: 10px;
     font-weight: bold;
+}
+
+img {
+  border-radius: 50%;
 }
 </style>
