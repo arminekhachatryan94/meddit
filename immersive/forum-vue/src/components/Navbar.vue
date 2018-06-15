@@ -21,7 +21,7 @@
         </span>
     </div>
     <div class="bottom-nav text-left" @click="home()">
-        <img src="../assets/reddit-logo.png" width="28px">
+        <img src="../assets/navbar/reddit-logo.png" width="28px">
         <span class="font-meddit center-in">meddit</span>
     </div>
 </nav>
