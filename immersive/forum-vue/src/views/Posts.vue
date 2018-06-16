@@ -9,7 +9,8 @@
         :dateTime="post.created_at"
         :user="post.user"
         :comments="post.comments"
-        class="margin-bottom-5">
+        class="margin-bottom-5"
+        @delete="deletePost">
     </post>
 </div>
 </template>
@@ -26,6 +27,15 @@ export default {
     }
   },
   components: { Post },
+  methods: {
+    deletePost (id) {
+      for (var i = 0; i < this.posts.length; i++) {
+        if (this.posts[i].id == id) {
+          this.posts.splice(i, 1)
+        }
+      }
+    }
+  },
   created () {
     axios.get('http://127.0.0.1:8000/api/posts').then((response) => {
       this.posts = response.data.posts

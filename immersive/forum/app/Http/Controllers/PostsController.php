@@ -119,7 +119,8 @@ class PostsController extends Controller
             if( $post->user_id == $request->user_id || $user->role == 1 ){
                 $post->delete();
                 return response()->json([
-                    'post' => 'Post was successfully deleted'
+                    'message' => 'Post was successfully deleted',
+                    'post' => $id
                 ], 201);
             } else {
                 return response()->json([

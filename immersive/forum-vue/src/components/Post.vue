@@ -1,48 +1,55 @@
 <template>
 <div class="post-container bg-white text-left row">
-    <div class="col-md-1 padding-top-15">
-      <img src="../assets/posts/chat-bubble.png" width="50">
+  <div class="col-md-1 padding-top-15">
+    <img src="../assets/posts/chat-bubble.png" width="50">
+  </div>
+  <div v-if="!this.editing" class="col-md-11">
+    <div v-text="this.title" class="title"></div>
+    <div class="container2">
+      <div class="text-gray user-date">
+        <!-- view body -->
+        <a @click="showBody" :id="'op' + this.id" class="text-gray cursor">[-]</a>
+        <a href="#" class="username padding-r-5"><b>{{this.user.username}}</b></a>
+        <i :id="'time' + this.id" data-toggle="tooltip">{{this.timeAgo()}}</i>
+      </div>
+      <div v-if="this.show_body" v-text="this.body" class="body"></div>
+      <div>
+        <a v-if="comments.length != 1 " href="#" @click.prevent="showComments()" class="ops">{{this.comments.length}} comments</a>
+        <a v-if="comments.length == 1 " href="#" @click.prevent="showComments()" class="ops">{{this.comments.length}} comment</a>
+        <a href="#" @click.prevent="editPost()" class="ops">edit</a>
+        <a href="#" @click.prevent="deletePost" class="ops">delete</a>
+      </div>
+      <div v-if="show_comments" class="comments">
+        <comment v-if="comments.length" v-for="comment in comments"
+          :key="comment.id"
+          :id="comment.id"
+          :body="comment.body"
+          :user="comment.user"
+          :dateTime="comment.created_at">
+        </comment>
+        <div v-if="!comments.length">No comments</div>
+      </div>
     </div>
-    <div v-if="!this.editing" class="col-md-11">
-        <div v-text="this.title" class="title"></div>
-        <div class="container2">
-            <div class="text-gray user-date">
-                <!-- view body -->
-                <a @click="showBody" :id="'op' + this.id" class="text-gray cursor">[-]</a>
-                <a href="#" class="username padding-r-5"><b>{{this.user.username}}</b></a>
-                <i :id="'time' + this.id" data-toggle="tooltip">{{this.timeAgo()}}</i>
-            </div>
-            <div v-if="this.show_body" v-text="this.body" class="body"></div>
-            <div>
-                <a v-if="comments.length != 1 " href="#" @click.prevent="showComments()" class="ops">{{this.comments.length}} comments</a>
-                <a v-if="comments.length == 1 " href="#" @click.prevent="showComments()" class="ops">{{this.comments.length}} comment</a>
-                <a href="#" @click.prevent="editPost()" class="ops">edit</a>
-                <a href="#" @click.prevent="deletePost()" class="ops">delete</a>
-            </div>
-            <div v-if="show_comments">
-              <div v-for="comment in comments"
-                :key="comment.id">
-                <div v-text="comment.body"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div v-if="this.editing">
-        <form method="PUT" @submit.prevent="savePost">
-            <div class="form-group">
-                <input v-model="newpost.title" name="title" type="text" required>
-            </div>
-            <div class="form-group">
-                <textarea v-model="newpost.body" name="body" required></textarea>
-            </div>
-            <button type="submit">Save</button>
-        </form>
-    </div>
+  </div>
+  <div v-if="this.editing" class="col-md-11">
+    <form method="PUT" @submit.prevent="savePost">
+      <div class="form-group">
+        <input v-model="newpost.title" name="title" type="text" required>
+      </div>
+      <div class="form-group">
+        <textarea v-model="newpost.body" name="body" required></textarea>
+      </div>
+      <button type="submit">Save</button>
+    </form>
+  </div>
 </div>
 </template>
 
 <script>
 import moment from 'moment'
+import axios from 'axios'
+import Comment from './Comment'
+import User from './User'
 
 export default {
   name: 'Post',
@@ -51,9 +58,10 @@ export default {
     title: String,
     body: String,
     dateTime: String,
-    user: Object,
+    user: User,
     comments: Array
   },
+  components: { Comment, User },
   data () {
     return {
       editing: false,
@@ -102,8 +110,22 @@ export default {
       this.editing = false
       alert('Post saved')
     },
-    deletePost: function () {
-      alert('Post successfully deleted')
+    emitEvent () {
+      this.$emit('delete', this.id)
+    },
+    deletePost (event) {
+      var self = this
+      axios.delete('http://127.0.0.1:8000/api/posts/' + this.id, {
+        params: {
+          'user_id': this.user.id
+        }
+      }).then(function (response) {
+        // alert(response.data.post);
+        self.$emit('delete', self.id)
+        // location.href = '/#/posts'
+      }).catch(function (error) {
+        console.log(error)
+      })
     }
   },
   mounted () {
@@ -138,6 +160,12 @@ export default {
 }
 .cursor {
   cursor: pointer;
+}
+.comments {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 12px;
+  padding-top: 10px;
+  border-top: 1px solid lightgray;
 }
 
 .title {

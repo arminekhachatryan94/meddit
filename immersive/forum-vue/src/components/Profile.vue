@@ -19,8 +19,8 @@
 export default {
   name: 'Profile',
   methods: {
-    settings: function() {
-      var pages = document.getElementsByClassName('page');
+    settings: function () {
+      var pages = document.getElementsByClassName('page')
       for (var i = 0; i < pages.length; i++) {
         pages[i].style.color = 'black'
         pages[i].style.fontWeight = 'normal'
