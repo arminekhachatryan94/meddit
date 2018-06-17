@@ -12,7 +12,7 @@ class PostsController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'user_id' => 'required|string|max:255',
+            'user_id' => 'required|max:255',
             'title' => 'required|string|max:255',
             'body' => 'required|string|max:255'
         ]);

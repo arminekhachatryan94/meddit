@@ -7,7 +7,7 @@
         <a href="#" class="username padding-r-5"><b>{{this.user.username}}</b></a>
         <i :id="'time-c-' + this.id" data-toggle="tooltip">{{this.timeAgo()}}</i>
       </div>
-      <div v-if="this.show_body" v-text="this.body" class="body"></div>
+      <div v-text="this.body" class="body"></div>
       <div>
         <a href="#" @click.prevent="editComment()" class="ops-c">edit</a>
         <a href="#" @click.prevent="deleteComment()" class="ops-c">delete</a>

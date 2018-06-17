@@ -10,7 +10,8 @@
         :user="post.user"
         :comments="post.comments"
         class="margin-bottom-5"
-        @delete="deletePost">
+        @delete="deletePost"
+        @edit="editPost">
     </post>
 </div>
 </template>
@@ -33,6 +34,14 @@ export default {
         if (this.posts[i].id == id) {
           this.posts.splice(i, 1)
           break
+        }
+      }
+    },
+    editPost (post) {
+      for (var i = 0; i < this.posts.length; i++) {
+        if (this.posts[i].id == post.id) {
+          this.posts[i].title = post.title
+          this.posts[i].body = post.body
         }
       }
     }

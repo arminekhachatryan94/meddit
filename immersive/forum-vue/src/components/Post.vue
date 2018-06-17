@@ -3,20 +3,26 @@
   <div class="col-md-1 padding-top-15">
     <img src="../assets/posts/chat-bubble.png" width="50">
   </div>
-  <div v-if="!this.editing" class="col-md-11">
-    <div v-text="this.title" class="title"></div>
+  <div class="col-md-11">
+    <div v-if="!this.editing" v-text="this.title" class="title"></div>
+    <input v-if="this.editing" v-model="newpost.title" name="title" type="text" class="title" required>
     <div class="container2">
       <div class="text-gray user-date">
         <!-- view body -->
-        <a @click="showBody" :id="'op' + this.id" class="text-gray cursor">[-]</a>
+        <a v-if="!this.editing" @click="showBody" :id="'op' + this.id" class="text-gray cursor">[-]</a>
         <a href="#" class="username padding-r-5"><b>{{this.user.username}}</b></a>
         <i :id="'time' + this.id" data-toggle="tooltip">{{this.timeAgo()}}</i>
       </div>
-      <div v-if="this.show_body" v-text="this.body" class="body"></div>
+      <div v-if="!this.editing && this.show_body" v-text="this.body" class="body"></div>
+      <div class="body">
+        <textarea v-if="this.editing" v-model="newpost.body" name="body" class="edit-body" required></textarea>
+      </div>
       <div>
         <a v-if="comments.length != 1 " href="#" @click.prevent="showComments()" class="ops">{{this.comments.length}} comments</a>
         <a v-if="comments.length == 1 " href="#" @click.prevent="showComments()" class="ops">{{this.comments.length}} comment</a>
-        <a href="#" @click.prevent="editPost()" class="ops">edit</a>
+        <a href="#" v-if="!this.editing" @click.prevent="editPost()" class="ops">edit</a>
+        <a href="#" v-if="this.editing" @click.prevent="savePost" class="ops">save</a>
+        <a href="#" v-if="this.editing" @click.prevent="cancelPost()" class="ops">cancel</a>
         <a href="#" @click.prevent="deletePost" class="ops">delete</a>
       </div>
       <div v-if="show_comments" class="comments">
@@ -31,7 +37,7 @@
       </div>
     </div>
   </div>
-  <div v-if="this.editing" class="col-md-11">
+  <!--div class="col-md-11">
     <form method="PUT" @submit.prevent="savePost">
       <div class="form-group">
         <input v-model="newpost.title" name="title" type="text" required>
@@ -41,7 +47,7 @@
       </div>
       <button type="submit">Save</button>
     </form>
-  </div>
+  </div-->
 </div>
 </template>
 
@@ -98,17 +104,26 @@ export default {
       }
     },
     editPost: function () {
-      if (this.editing) {
-        this.editing = false
-      } else {
-        this.editing = true
-        this.newpost.title = this.title
-        this.newpost.body = this.body
-      }
+      this.editing = true
     },
-    savePost: function () {
+    cancelPost: function () {
       this.editing = false
-      alert('Post saved')
+      this.newpost.title = this.title
+      this.newpost.body = this.body
+    },
+    savePost (event) {
+      var self = this
+      axios.put('http://127.0.0.1:8000/api/posts/' + this.id, {
+        user_id: this.user.id,
+        title: this.newpost.title,
+        body: this.newpost.body
+      }).then(function (response) {
+        self.$emit('edit', response.data.post)
+        self.editing = false
+        alert('Post saved')
+      }).catch(function (error) {
+        console.log(error)
+      })
     },
     deletePost (event) {
       var self = this
@@ -171,6 +186,10 @@ export default {
 .body {
     font-size: 12px;
     padding-top: 3px;
+}
+.edit-body {
+  width: 100%;
+  height: 150px;
 }
 .user-date {
     font-size: 10px;
