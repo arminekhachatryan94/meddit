@@ -19,6 +19,7 @@
 <script>
 import Post from '../components/Post'
 import axios from 'axios'
+import EventBus from '../components/event-bus';
 
 export default {
   name: 'Posts',
@@ -51,6 +52,13 @@ export default {
       this.posts = response.data.posts
     }).catch(function (error) {
       console.log(error)
+    })
+  },
+  mounted () {
+    let self = this
+    EventBus.$on('new', function (post) {
+      console.log(post)
+      self.posts.unshift(post)
     })
   }
 }

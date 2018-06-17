@@ -66,6 +66,8 @@ class PostsController extends Controller
             $post = User::where('id', $request->input('user_id'))->exists();
             if( $post ){
                 $newpost = $this->save($request->all());
+                $newpost->comments;
+                $newpost->user;
                 return response()->json([ 'post' => $newpost ], 201);
             } else {
                 return response()->json([
