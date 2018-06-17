@@ -18,7 +18,7 @@
           <router-link :to="{ name: 'Login' }" class="page text-black" id="login" @click.native="onClick('login')">LOGIN</router-link>
           <div class="symbol">&#183;</div>
           
-          <router-link :to="{ name: '' }" class="page text-black" id="register" @click.native="onClick('register')">REGISTER</router-link>
+          <router-link :to="{ name: 'Register' }" class="page text-black" id="register" @click.native="onClick('register')">REGISTER</router-link>
         </span>
     </div>
     <div class="bottom-nav text-left row">

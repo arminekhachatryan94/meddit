@@ -106,7 +106,7 @@ class RegisterController extends Controller
         } else {
             return response()->json([
                 'errors' => $errors
-            ], 201);
+            ], 401);
         }
     }
 }
