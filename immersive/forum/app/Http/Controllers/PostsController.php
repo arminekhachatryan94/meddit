@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Post;
 use App\User;
+use App\UserRole;
 use Validator;
 
 class PostsController extends Controller
@@ -115,8 +116,8 @@ class PostsController extends Controller
         $post = Post::find($id);
 
         if( $post ){
-            $user = User::where('id', $request->input('user_id'))->latest();
-            if( $post->user_id == $request->user_id || $user->role == 1 ){
+            $user = User::where('id', $request->input('user_id'))->get();
+            if( ($post->user_id == $request->input('user_id')) || ($user[0]->role == 1) ){
                 $post->delete();
                 return response()->json([
                     'message' => 'Post was successfully deleted',

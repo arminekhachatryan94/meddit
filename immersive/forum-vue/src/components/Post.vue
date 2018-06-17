@@ -5,7 +5,9 @@
   </div>
   <div class="col-md-11">
     <div v-if="!this.editing" v-text="this.title" class="title"></div>
-    <input v-if="this.editing" v-model="newpost.title" name="title" type="text" class="title" required>
+    <input v-if="this.editing" v-model="newpost.title" @keydown="clearTitleError()" name="title" type="text" class="title" required>
+    <div v-if="this.errors.title.length" v-text="this.errors.title" class="text-danger font-size"></div>
+    
     <div class="container2">
       <div class="text-gray user-date">
         <!-- view body -->
@@ -13,17 +15,20 @@
         <a href="#" class="username padding-r-5"><b>{{this.user.username}}</b></a>
         <i :id="'time' + this.id" data-toggle="tooltip">{{this.timeAgo()}}</i>
       </div>
+      
       <div v-if="!this.editing && this.show_body" v-text="this.body" class="body"></div>
       <div class="body">
-        <textarea v-if="this.editing" v-model="newpost.body" name="body" class="edit-body" required></textarea>
+        <textarea v-if="this.editing" v-model="newpost.body" @keydown="clearBodyError()" name="body" class="edit-body" required></textarea>
       </div>
+      <div v-if="this.errors.body.length" v-text="this.errors.body" class="text-danger font-size"></div>
+      
       <div>
-        <a v-if="comments.length != 1 " href="#" @click.prevent="showComments()" class="ops">{{this.comments.length}} comments</a>
-        <a v-if="comments.length == 1 " href="#" @click.prevent="showComments()" class="ops">{{this.comments.length}} comment</a>
-        <a href="#" v-if="!this.editing" @click.prevent="editPost()" class="ops">edit</a>
-        <a href="#" v-if="this.editing" @click.prevent="savePost" class="ops">save</a>
-        <a href="#" v-if="this.editing" @click.prevent="cancelPost()" class="ops">cancel</a>
-        <a href="#" @click.prevent="deletePost" class="ops">delete</a>
+        <a v-if="comments.length != 1" href="#" @click.prevent="showComments()" class="ops">{{this.comments.length}} comments</a>
+        <a v-if="comments.length == 1" href="#" @click.prevent="showComments()" class="ops">{{this.comments.length}} comment</a>
+        <a href="#" v-if="!this.editing && this.editPermission()" @click.prevent="editPost()" class="ops">edit</a>
+        <a href="#" v-if="this.editing && this.editPermission()" @click.prevent="savePost" class="ops">save</a>
+        <a href="#" v-if="this.editing && this.editPermission()" @click.prevent="cancelPost()" class="ops">cancel</a>
+        <a href="#" v-if="this.deletePermission()" @click.prevent="deletePost" class="ops">delete</a>
       </div>
       <div v-if="show_comments" class="comments">
         <comment v-if="comments.length" v-for="comment in comments"
@@ -76,6 +81,10 @@ export default {
       newpost: {
         title: this.title,
         body: this.body
+      },
+      errors: {
+        body: '',
+        title: ''
       }
     }
   },
@@ -104,7 +113,11 @@ export default {
       }
     },
     editPost: function () {
-      this.editing = true
+      if (this.$store.state.user.id == this.user.id) {
+        this.editing = true
+      } else {
+        alert('You do not have permission to edit this post')
+      }
     },
     cancelPost: function () {
       this.editing = false
@@ -112,32 +125,70 @@ export default {
       this.newpost.body = this.body
     },
     savePost (event) {
+      console.log(this.$store.state.user.role)
+      console.log(typeof this.$store.state.user.role)
       var self = this
-      axios.put('http://127.0.0.1:8000/api/posts/' + this.id, {
-        user_id: this.$store.state.user.id,
-        title: this.newpost.title,
-        body: this.newpost.body
-      }).then(function (response) {
-        self.$emit('edit', response.data.post)
-        self.editing = false
-        alert('Post saved')
-      }).catch(function (error) {
-        console.log(error)
-      })
+      if (this.editPermission()) {
+        axios.put('http://127.0.0.1:8000/api/posts/' + this.id, {
+          user_id: this.$store.state.user.id,
+          title: this.newpost.title,
+          body: this.newpost.body
+        }).then(function (response) {
+          self.$emit('edit', response.data.post)
+          self.editing = false
+          alert('Post saved')
+        }).catch(function (error) {
+          var errors = error.response.data.errors
+          if (typeof errors.body !== 'undefined') {
+            self.errors.body = errors.body[0]
+          }
+          if (typeof errors.title !== 'undefined') {
+            self.errors.title = errors.title[0]
+          }
+        })
+      } else {
+        console.log('error')
+      }
     },
     deletePost (event) {
       var self = this
-      axios.delete('http://127.0.0.1:8000/api/posts/' + this.id, {
-        params: {
-          'user_id': this.$store.state.user.id
-        }
-      }).then(function (response) {
-        // alert(response.data.post);
-        self.$emit('delete', self.id)
-        // location.href = '/#/posts'
-      }).catch(function (error) {
-        console.log(error)
-      })
+      if (this.deletePermission()) {
+        axios.delete('http://127.0.0.1:8000/api/posts/' + this.id, {
+          params: {
+            'user_id': this.$store.state.user.id
+          }
+        }).then(function (response) {
+          // alert(response.data.post);
+          self.$emit('delete', self.id)
+          // location.href = '/#/posts'
+        }).catch(function (error) {
+          console.log(error.response.data)
+        })
+      } else {
+        alert('You do not have permission to delete this post')
+      }
+    },
+    editPermission () {
+      if (this.$store.state.user.id == this.user.id) {
+        return true
+      } else {
+        return false
+      }
+    },
+    deletePermission () {
+      if (this.$store.state.user.id == this.user.id) {
+        return true
+      } else if (this.$store.state.user.role == 1) {
+        return true
+      } else {
+        return false
+      }
+    },
+    clearBodyError () {
+      this.errors.body = ''
+    },
+    clearTitleError () {
+      this.errors.title = ''
     }
   },
   mounted () {
@@ -192,7 +243,10 @@ export default {
   height: 150px;
 }
 .user-date {
-    font-size: 10px;
+  font-size: 10px;
+}
+.font-size {
+  font-size: 12px;
 }
 
 .ops {
