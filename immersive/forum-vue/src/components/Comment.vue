@@ -4,7 +4,6 @@
     <div class="comment-container2">
       <div class="text-gray user-date">
         <!-- view body -->
-        <a @click="showBody" :id="'op-c-' + this.id" class="text-gray cursor">[-]</a>
         <a href="#" class="username padding-r-5"><b>{{this.user.username}}</b></a>
         <i :id="'time-c-' + this.id" data-toggle="tooltip">{{this.timeAgo()}}</i>
       </div>
@@ -40,7 +39,6 @@ export default {
   data () {
     return {
       editing: false,
-      show_body: true,
       newcomment: {
         body: this.body
       }
@@ -52,16 +50,6 @@ export default {
     },
     time: function () {
       document.getElementById('time-c-' + this.id).title = moment(this.dateTime).format('MMMM DD YYYY, h:mma')
-    },
-    showBody: function () {
-      var op = document.getElementById('op-c' + this.id)
-      if (this.show_body) {
-        op.innerHTML = '[+]'
-        this.show_body = false
-      } else {
-        op.innerHTML = '[-]'
-        this.show_body = true
-      }
     },
     editComment: function () {
       if (this.editing) {

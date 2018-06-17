@@ -110,9 +110,6 @@ export default {
       this.editing = false
       alert('Post saved')
     },
-    emitEvent () {
-      this.$emit('delete', this.id)
-    },
     deletePost (event) {
       var self = this
       axios.delete('http://127.0.0.1:8000/api/posts/' + this.id, {

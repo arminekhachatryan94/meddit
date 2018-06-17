@@ -32,6 +32,7 @@ export default {
       for (var i = 0; i < this.posts.length; i++) {
         if (this.posts[i].id == id) {
           this.posts.splice(i, 1)
+          break
         }
       }
     }
