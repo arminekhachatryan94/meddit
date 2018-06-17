@@ -3,7 +3,7 @@
     <div class="img">
         <img src="../assets/profile/profile-pic.png" width="90px">
     </div>
-    <div class="username">u/armmm__</div>
+    <div class="username">u/{{this.$store.state.user.username}}</div>
     <div class="button">
         <button class="btn btn-primary w-100">NEW POST</button>
     </div>

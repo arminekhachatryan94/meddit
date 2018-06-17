@@ -2,27 +2,32 @@
 <nav>
     <div class="top-nav row fixed col-md-12">
         <span class="col-md-6 text-left">
-          <router-link :to="{ name: 'Home' }" class="page text-black" id="home" v-on:click.native="onClick('home')">HOME</router-link>
-          <div class="symbol">&#183;</div>
+          <router-link v-if="!this.$store.state.auth" :to="{ name: 'Home' }" class="page text-black" id="home" v-on:click.native="onClick('home')">HOME</router-link>
+          <div v-if="!this.$store.state.auth" class="symbol">&#183;</div>
+
           <router-link :to="{ name: 'Posts' }" class="page text-black" id="posts" @click.native="onClick('posts')">POSTS</router-link>
-          <div class="symbol">&#183;</div>
-          <router-link :to="{ name: '' }" class="page text-black" id="myposts" @click.native="onClick('myposts')">MY POSTS</router-link>
-          <div class="symbol">&#183;</div>
-          <router-link :to="{ name: '' }" class="page text-black" id="userroles" @click.native="onClick('userroles')">USER ROLES</router-link>
+          
+          <div v-if="this.$store.state.auth" class="symbol">&#183;</div>
+          <router-link v-if="this.$store.state.auth" :to="{ name: '' }" class="page text-black" id="myposts" @click.native="onClick('myposts')">MY POSTS</router-link>
+
+          <div v-if="this.$store.state.auth" class="symbol">&#183;</div>
+          <router-link v-if="this.$store.state.auth" :to="{ name: '' }" class="page text-black" id="userroles" @click.native="onClick('userroles')">USER ROLES</router-link>
         </span>
-        <span class="col-md-6 text-right">
-          <router-link :to="{ name: '' }" class="page text-black" id="login" @click.native="onClick('login')">LOGIN</router-link>
+        
+        <span v-if="!this.$store.state.auth" class="col-md-6 text-right">
+          <router-link :to="{ name: 'Login' }" class="page text-black" id="login" @click.native="onClick('login')">LOGIN</router-link>
           <div class="symbol">&#183;</div>
+          
           <router-link :to="{ name: '' }" class="page text-black" id="register" @click.native="onClick('register')">REGISTER</router-link>
         </span>
     </div>
-    <div class="bottom-nav text-left row" @click="home()">
+    <div class="bottom-nav text-left row">
       <div class="col-md-10 text-left">
         <img src="../assets/navbar/reddit-logo.png" width="28px">
         <span class="font-meddit center-in">meddit</span>
       </div>
-      <div class="col-md-2 text-right bottom-right-nav text-gray">
-        <div class="inline-block text-dark-blue">username</div>
+      <div v-if="this.$store.state.auth" class="col-md-2 text-right bottom-right-nav text-gray">
+        <div class="inline-block text-dark-blue">{{this.$store.state.user.username}}</div>
         <div class="inline-block text-gray bold">|</div>
         <router-link :to="{ name: '' }" class="text-dark-blue logout">logout</router-link>
       </div>
@@ -40,7 +45,9 @@ export default {
         ['#/posts', 'posts'],
         ['#/myposts', 'myposts'],
         ['#/user-roles', 'userroles'],
-        ['#/settings', 'settings']
+        ['#/settings', 'settings'],
+        ['#/login', 'login'],
+        ['#/register', 'register'],
       ]
     }
   },
@@ -54,11 +61,11 @@ export default {
       var style = document.getElementById(page).style
       style.color = 'orange'
       style.fontWeight = 'bold'
-    },
+    }/*,
     home: function () {
       this.onClick('home')
       this.$router.replace('/')
-    }
+    }*/
   },
   mounted () {
     var hash = window.location.hash

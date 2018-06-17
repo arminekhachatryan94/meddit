@@ -2,16 +2,21 @@
   <div id="app">
     <navbar class="z-top"></navbar>
     <!-- if logged in -->
-    <main class="col-md-12 row">
-      <div class="col-md-9">
-        <router-view/>
-      </div>
-      <div class="col-md-3">
-        <profile class="z-top"></profile>
-      </div>
-    </main>
+    <div v-if="this.$store.state.auth">
+      <main class="col-md-12 row">
+        <div class="col-md-9">
+          <router-view/>
+        </div>
+        <div class="col-md-3">
+          <profile class="z-top"></profile>
+        </div>
+      </main>
+    </div>
 
     <!-- if not logged in -->
+    <main v-if="!this.$store.state.auth" class="padding-right-40">
+      <router-view></router-view>
+    </main>
   </div>
 </template>
 
@@ -37,5 +42,8 @@ main {
 }
 .z-top {
   z-index: 1;
+}
+.padding-right-40 {
+  padding-right: 40px;
 }
 </style>
