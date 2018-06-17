@@ -114,7 +114,7 @@ export default {
     savePost (event) {
       var self = this
       axios.put('http://127.0.0.1:8000/api/posts/' + this.id, {
-        user_id: this.user.id,
+        user_id: this.$store.state.user.id,
         title: this.newpost.title,
         body: this.newpost.body
       }).then(function (response) {
@@ -129,7 +129,7 @@ export default {
       var self = this
       axios.delete('http://127.0.0.1:8000/api/posts/' + this.id, {
         params: {
-          'user_id': this.user.id
+          'user_id': this.$store.state.user.id
         }
       }).then(function (response) {
         // alert(response.data.post);

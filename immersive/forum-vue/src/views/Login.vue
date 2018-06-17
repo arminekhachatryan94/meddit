@@ -62,7 +62,6 @@ export default {
           email: this.credentials.email,
           password: this.credentials.password
         }).then(function (response) {
-          console.log(response.data.user[0])
           self.$session.start()
           // this.$session.flash.set('loggedin', 'Successfully logged in! Enjoy iChat.')
           self.$session.set('auth', true)
@@ -70,8 +69,9 @@ export default {
           self.$store.commit('login', response.data.user[0])
           self.$router.push('/posts');
         }).catch(function (error) {
-          console.log(error)
-          // self.errors.other = 'Invalid credentials.'
+          if (typeof error.response.data.errors.invalid !== 'undefined') {
+            self.errors.other = error.response.data.errors.invalid
+          } 
         })
       }
     },

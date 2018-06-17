@@ -29,7 +29,7 @@
       <div v-if="this.$store.state.auth" class="col-md-2 text-right bottom-right-nav text-gray">
         <div class="inline-block text-dark-blue">{{this.$store.state.user.username}}</div>
         <div class="inline-block text-gray bold">|</div>
-        <router-link :to="{ name: '' }" class="text-dark-blue logout">logout</router-link>
+        <a href="#" @click.prevent="logout" class="text-dark-blue logout">logout</a>
       </div>
     </div>
 </nav>
@@ -61,6 +61,10 @@ export default {
       var style = document.getElementById(page).style
       style.color = 'orange'
       style.fontWeight = 'bold'
+    },
+    logout () {
+      this.$session.destroy()
+      this.$store.commit('logout')
     }/*,
     home: function () {
       this.onClick('home')
