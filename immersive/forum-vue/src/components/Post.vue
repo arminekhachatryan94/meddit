@@ -40,6 +40,16 @@
         </comment>
         <div v-if="!comments.length">No comments</div>
       </div>
+      
+      <!-- new comment -->
+      <div v-if="this.$store.state.auth" class="comment-container">
+        <div>
+          <textarea type="text" v-model="newcomment.body" class="w-100 h-100"></textarea>
+        </div>
+        <div>
+          <button @click="postComment()" class="btn btn-primary">Comment</button>
+        </div>
+      </div>
     </div>
   </div>
   <!--div class="col-md-11">
@@ -85,6 +95,12 @@ export default {
       errors: {
         body: '',
         title: ''
+      },
+      newcomment: {
+        body: ''
+      },
+      comment_errors: {
+        body: ''
       }
     }
   },
@@ -189,6 +205,23 @@ export default {
     },
     clearTitleError () {
       this.errors.title = ''
+    },
+    postComment () {
+      if (this.newcomment.body.length == 0) {
+        this.comment_errors.body = 'Body is required'
+      } else {
+        axios.post('http://127.0.0.1:8000/api/posts/' + this.id + '/new-comment', {
+          body: this.newcomment.body,
+          user_id: this.$store.state.user.id
+        })
+        .then((response) => {
+          this.comments.push(response.data.comment)
+          this.show_comments = true
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+        });
+      }
     }
   },
   mounted () {
@@ -229,6 +262,23 @@ export default {
   font-size: 12px;
   padding-top: 10px;
   border-top: 1px solid lightgray;
+}
+.comment-container {
+  width: 40%;
+}
+.btn-primary {
+  background-color: rgb(32, 120, 209);
+  padding: 3px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  width: 100%;
+}
+.w-100 {
+  width: 100%
+}
+.h-100 {
+  height: 100px;
 }
 
 .title {

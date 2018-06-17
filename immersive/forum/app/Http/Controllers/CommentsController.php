@@ -36,9 +36,10 @@ class CommentsController extends Controller
 
         if( count($errors) == 0 ){
             $post = Post::where('id', $id)->exists();
-            $user = User::where('id', $id)->exists();
+            $user = User::where('id', $request->input('user_id'))->exists();
             if( $post && $user ){
                 $comment = $this->save($req);
+                $comment->user;
                 return response()->json([ 'comment' => $comment ], 201);
             } else if( !$post ) {
                 return response()->json([
