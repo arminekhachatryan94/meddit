@@ -7,11 +7,8 @@
 
           <router-link :to="{ name: 'Posts' }" class="page text-black" id="posts" @click.native="onClick('posts')">POSTS</router-link>
           
-          <div v-if="this.$store.state.auth" class="symbol">&#183;</div>
-          <router-link v-if="this.$store.state.auth" :to="{ name: '' }" class="page text-black" id="myposts" @click.native="onClick('myposts')">MY POSTS</router-link>
-
-          <div v-if="this.$store.state.auth" class="symbol">&#183;</div>
-          <router-link v-if="this.$store.state.auth" :to="{ name: '' }" class="page text-black" id="userroles" @click.native="onClick('userroles')">USER ROLES</router-link>
+          <div v-if="this.$store.state.user.role" class="symbol">&#183;</div>
+          <router-link v-if="this.$store.state.user.role" :to="{ name: 'Users' }" class="page text-black" id="userroles" @click.native="onClick('userroles')">USER ROLES</router-link>
         </span>
         
         <span v-if="!this.$store.state.auth" class="col-md-6 text-right">
@@ -43,7 +40,6 @@ export default {
       pages: [
         ['#/', 'home'],
         ['#/posts', 'posts'],
-        ['#/myposts', 'myposts'],
         ['#/user-roles', 'userroles'],
         ['#/settings', 'settings'],
         ['#/login', 'login'],
