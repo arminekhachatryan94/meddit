@@ -59,6 +59,7 @@ export default {
         pages[i].style.color = 'black'
         pages[i].style.fontWeight = 'normal'
       }
+      this.$router.push('/settings');
     },
     showNewPost: function () {
       if (this.showpost) {
