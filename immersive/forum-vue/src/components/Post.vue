@@ -36,7 +36,9 @@
           :id="comment.id"
           :body="comment.body"
           :user="comment.user"
-          :dateTime="comment.created_at">
+          :dateTime="comment.created_at"
+          @delete-comment="deleteComment"
+          @edit-comment="editComment">
         </comment>
         <div v-if="!comments.length">No comments</div>
       </div>
@@ -141,8 +143,6 @@ export default {
       this.newpost.body = this.body
     },
     savePost (event) {
-      console.log(this.$store.state.user.role)
-      console.log(typeof this.$store.state.user.role)
       var self = this
       if (this.editPermission()) {
         axios.put('http://127.0.0.1:8000/api/posts/' + this.id, {
@@ -221,6 +221,21 @@ export default {
         .catch((error) => {
           console.log(error.response.data);
         });
+      }
+    },
+    deleteComment (id) {
+      for (var i = 0; i < this.comments.length; i++) {
+        if (this.comments[i].id == id) {
+          this.comments.splice(i, 1)
+          break
+        }
+      }
+    },
+    editComment (comment) {
+      for (var i = 0; i < this.comments.length; i++) {
+        if (this.comments[i].id == comment.id) {
+          this.comments[i].body = comment.body
+        }
       }
     }
   },
