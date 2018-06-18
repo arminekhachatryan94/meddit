@@ -42,6 +42,12 @@ const store = new Vuex.Store({
       state.user.email = user.email
       state.user.role = user.role
       state.user.biography = user.biography
+    },
+    username(state, username) {
+      state.username = username
+    },
+    biography(state, biography) {
+      state.biography = biography
     }
   }
 })

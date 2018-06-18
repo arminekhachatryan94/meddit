@@ -79,6 +79,7 @@ export default {
           self.errors.password = ''
           self.password = ''
           self.user.username = self.username
+          self.$store.commit('username', self.username)
         }).catch(function (error) {
           var errors = error.response.data.errors
           if( typeof errors.username !== 'undefined' ){
@@ -108,6 +109,7 @@ export default {
           self.errors.password = ''
           self.password = ''
           self.user.biography = self.biography
+          self.$store.commit('biography', self.biography)
         }).catch(function (error) {
           var errors = error.response.data.errors
           console.log(errors)

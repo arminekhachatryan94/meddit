@@ -4,6 +4,9 @@
         <img src="../assets/profile/profile-pic.png" width="90px">
     </div>
     <div class="username">u/{{this.$store.state.user.username}}</div>
+    <div class="padding-top-10">
+      <span v-text="this.$store.state.user.biography"></span>
+    </div>
     <div class="button">
         <button @click="showNewPost()" class="btn btn-primary w-100">NEW POST</button>
     </div>
@@ -121,6 +124,9 @@ export default {
 }
 .w-80 {
     width: 50%;
+}
+.padding-top-10 {
+  padding-top: 10px;
 }
 .btn-primary {
     background-color: rgb(32, 120, 209);
