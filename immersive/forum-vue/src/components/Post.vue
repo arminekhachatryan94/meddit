@@ -217,6 +217,7 @@ export default {
         .then((response) => {
           this.comments.push(response.data.comment)
           this.show_comments = true
+          this.newcomment.body = ''
         })
         .catch((error) => {
           console.log(error.response.data);
