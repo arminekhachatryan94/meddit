@@ -3,7 +3,7 @@
   <div class="text-left margin-left-40 margin-bottom-10 font-style">SETTINGS</div>
   <div class="margin-bottom-5 settings-container">
     <div class="form-group">
-        <div>Change Username</div>
+        <div class="section">Change Username</div>
         <div class="form-group">
             Username:<input type="text" v-model="username" required>
         </div>
@@ -16,7 +16,7 @@
     </div>
     <br>
     <div class="form-group">
-        <div>Change Biography</div>
+        <div class="section">Change Biography</div>
         <div class="form-group">
             Biography:<input type="text" v-model="biography" required>
         </div>
@@ -162,5 +162,10 @@ export default {
   font-size: 12px;
   font-weight: bold;
   width: 25%;
+}
+
+.section {
+  font-weight: bold;
+  color: rgb(32, 120, 209);
 }
 </style>

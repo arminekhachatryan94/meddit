@@ -36,6 +36,7 @@
           :id="comment.id"
           :body="comment.body"
           :user="comment.user"
+          :comments="comment.comments"
           :dateTime="comment.created_at"
           @delete-comment="deleteComment"
           @edit-comment="editComment">
@@ -141,6 +142,8 @@ export default {
       this.editing = false
       this.newpost.title = this.title
       this.newpost.body = this.body
+      this.errors.body = ''
+      this.errors.title = ''
     },
     savePost (event) {
       var self = this
@@ -280,7 +283,7 @@ export default {
   border-top: 1px solid lightgray;
 }
 .comment-container {
-  width: 40%;
+  width: 100%;
 }
 .btn-primary {
   background-color: rgb(32, 120, 209);

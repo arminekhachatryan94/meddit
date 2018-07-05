@@ -20,6 +20,17 @@
       </div>
     </div>
   </div>
+  <comment v-for="comment in comments"
+    v-if="comments.length"
+    :key="comment.id"
+    :id="comment.id"
+    :body="comment.body"
+    :user="comment.user"
+    :comments="comment.comments"
+    :dateTime="comment.created_at"
+    @delete-comment="deleteCommentEvent"
+    @edit-comment="editCommentEvent">
+    </comment>
   <!--div v-if="this.editing">
     <form method="PUT" @submit.prevent="saveComment">
       <div class="form-group">
@@ -41,7 +52,8 @@ export default {
     id: Number,
     body: String,
     dateTime: String,
-    user: Object
+    user: Object,
+    comments: []
   },
   data () {
     return {
@@ -100,14 +112,29 @@ export default {
             'user_id': this.$store.state.user.id
           }
         }).then(function (response) {
-          // alert(response.data.post);
+          // alert(response.data.post)
           self.$emit('delete-comment', self.id)
           // location.href = '/#/posts'
         }).catch(function (error) {
-          console.log(error.response.data)
+          console.log(error.response.data.errors)
         })
       } else {
         alert('You do not have permission to delete this comment')
+      }
+    },
+    deleteCommentEvent (id) {
+      for (var i = 0; i < this.comments.length; i++) {
+        if (this.comments[i].id == id) {
+          this.comments.splice(i, 1)
+          break
+        }
+      }
+    },
+    editCommentEvent (comment) {
+      for (var i = 0; i < this.comments.length; i++) {
+        if (this.comments[i].id == comment.id) {
+          this.comments[i].body = comment.body
+        }
       }
     },
     editPermission () {

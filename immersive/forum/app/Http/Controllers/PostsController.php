@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Post;
 use App\User;
+use App\Comment;
 use App\UserRole;
 use Validator;
 
@@ -28,13 +29,23 @@ class PostsController extends Controller
         ]);
     }
 
+    protected function comments(Comment $comment) {
+        $comment->comments;
+        $comment->user;
+        if( count($comment->comments) ){
+            foreach ($comment->comments as $comment1) {
+                $this->comments($comment1);
+            }
+        }
+    }
+
     public function posts() {
         $posts = Post::orderBy('created_at', 'desc')->get();
         foreach ( $posts as $post){
-            $post->comments;
             $post->user;
-            foreach ( $post->comments as $comment ){
-                $comment->user;
+            $post->comments;
+            foreach ($post->comments as $comment ){
+                $this->comments($comment);
             }
         }
 
