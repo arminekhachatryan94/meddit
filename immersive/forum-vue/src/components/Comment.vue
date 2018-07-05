@@ -31,14 +31,6 @@
     @delete-comment="deleteCommentEvent"
     @edit-comment="editCommentEvent">
     </comment>
-  <!--div v-if="this.editing">
-    <form method="PUT" @submit.prevent="saveComment">
-      <div class="form-group">
-        <textarea v-model="newcomment.body" name="body" required></textarea>
-      </div>
-      <button class="btn btn-primary" type="submit">Save</button>
-    </form>
-  </div-->
 </div>
 </template>
 

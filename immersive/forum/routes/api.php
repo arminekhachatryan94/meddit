@@ -29,6 +29,7 @@ Route::delete('/posts/{id}', 'PostsController@delete')->name('delete-post');
 Route::post('/posts/{id}/new-comment', 'CommentsController@create')->name('create-comment');
 Route::put('/comments/{comment}', 'CommentsController@edit')->name('edit-comment');
 Route::delete('/comments/{comment}', 'CommentsController@delete')->name('delete-comment');
+Route::post('/comments/{id}/new-comment', 'CommentsController@commentOnComment')->name('create-commentonComment');
 
 Route::get('/{id}/settings', 'SettingsController@settings')->name('settings');
 Route::put('/{id}/settings/username', 'SettingsController@username')->name('edit-username');
