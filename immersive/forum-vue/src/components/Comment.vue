@@ -27,7 +27,7 @@
       <textarea type="text" v-model="publish_comment.body" class="w-100 h-100"></textarea>
     </div>
     <div>
-      <button @click="postComment()" class="btn btn-primary">Reply</button>
+      <button @click.prevent="postComment()" class="btn btn-primary">Reply</button>
       <a href="#" @click.prevent="cancelReply()">Cancel</a>
     </div>
   </div>

@@ -60,6 +60,7 @@ class CommentsController extends Controller
             if( $post && $user ){
                 $comment = $this->save($req);
                 $comment->user;
+                $comment->comments;
                 return response()->json([ 'comment' => $comment ], 201);
             } else if( !$post ) {
                 return response()->json([
@@ -95,6 +96,7 @@ class CommentsController extends Controller
             if( $comment && $user ){
                 $newcomment = $this->save($req);
                 $newcomment->user;
+                $newcomment->comments;
                 return response()->json([ 'comment' => $newcomment ], 201);
             } else if( !$comment ) {
                 return response()->json([
