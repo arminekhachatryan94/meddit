@@ -223,7 +223,7 @@ export default {
           this.newcomment.body = ''
         })
         .catch((error) => {
-          console.log(error.response.data);
+          console.log(error.response.data)
         });
       }
     },

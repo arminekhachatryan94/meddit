@@ -13,6 +13,7 @@
       </div>
       <div v-if="this.errors.body.length" v-text="this.errors.body" class="text-danger font-size"></div>
       <div>
+        <a href="#" v-if="this.$store.state.auth" @click.prevent="replyComment()" class="ops-c">reply</a>
         <a href="#" v-if="!this.editing && this.editPermission()" @click.prevent="editComment()" class="ops-c">edit</a>
         <a href="#" v-if="this.editing && this.editPermission()" @click.prevent="saveComment" class="ops-c">save</a>
         <a href="#" v-if="this.editing && this.editPermission()" @click.prevent="cancelComment()" class="ops-c">cancel</a>
@@ -20,6 +21,17 @@
       </div>
     </div>
   </div>
+  <!-- new comment -->
+  <div v-if="this.$store.state.auth && this.replying" class="comment-container">
+    <div>
+      <textarea type="text" v-model="publish_comment.body" class="w-100 h-100"></textarea>
+    </div>
+    <div>
+      <button @click="postComment()" class="btn btn-primary">Reply</button>
+      <a href="#" @click.prevent="cancelReply()">Cancel</a>
+    </div>
+  </div>
+  <!-- all comments -->
   <comment v-for="comment in comments"
     v-if="comments.length"
     :key="comment.id"
@@ -50,10 +62,14 @@ export default {
   data () {
     return {
       editing: false,
+      replying: false,
       newcomment: {
         body: this.body
       },
       errors: {
+        body: ''
+      },
+      publish_comment: {
         body: ''
       }
     }
@@ -147,6 +163,28 @@ export default {
     },
     clearError () {
       this.errors.body = ''
+    },
+    replyComment () {
+      this.replying = true
+    },
+    cancelReply () {
+      this.replying = false
+      this.errors.body = ''
+    },
+    postComment () {
+      axios.post('http://127.0.0.1:8000/api/comments/' + this.id + '/new-comment', {
+        body: this.publish_comment.body,
+        user_id: this.$store.state.user.id
+      })
+      .then((response) => {
+        this.comments.unshift(response.data.comment)
+        this.publish_comment.body = ''
+        this.errors.body = ''
+        this.replying = false
+      })
+      .catch((error) => {
+        console.log(error.response.data)
+      });
     }
   },
   mounted () {
@@ -208,5 +246,16 @@ export default {
 
 img {
   border-radius: 50%;
+}
+
+.btn-primary {
+  background-color: rgb(32, 120, 209);
+  padding: 3px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-right: 5px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
 }
 </style>
