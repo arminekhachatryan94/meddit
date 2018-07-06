@@ -7,6 +7,7 @@
         :title="post.title"
         :body="post.body"
         :dateTime="post.created_at"
+        :updatedAt="post.updated_at"
         :user="post.user"
         :comments="post.comments"
         class="margin-bottom-5"
@@ -43,6 +44,7 @@ export default {
         if (this.posts[i].id === post.id) {
           this.posts[i].title = post.title
           this.posts[i].body = post.body
+          this.posts[i].updated_at = post.updated_at
         }
       }
     }
@@ -57,7 +59,6 @@ export default {
   mounted () {
     let self = this
     EventBus.$on('new', function (post) {
-      console.log(post)
       self.posts.unshift(post)
     })
   }

@@ -14,6 +14,7 @@
         <a v-if="!this.editing" @click="showBody" :id="'op' + this.id" class="text-gray cursor">[-]</a>
         <a href="#" class="username padding-r-5"><b>{{this.user.username}}</b></a>
         <i :id="'time' + this.id" data-toggle="tooltip">{{this.timeAgo()}}</i>
+        <u v-if="this.dateTime != this.updatedAt">Edited</u>
       </div>
 
       <div v-if="!this.editing && this.show_body" v-text="this.body" class="body"></div>
@@ -38,6 +39,7 @@
           :user="comment.user"
           :comments="comment.comments"
           :dateTime="comment.created_at"
+          :updatedAt="comment.updated_at"
           @delete-comment="deleteComment"
           @edit-comment="editComment">
         </comment>
@@ -82,6 +84,7 @@ export default {
     title: String,
     body: String,
     dateTime: String,
+    updatedAt: String,
     user: User,
     comments: Array
   },

@@ -6,6 +6,7 @@
         <!-- view body -->
         <a href="#" class="username padding-r-5"><b>{{this.user.username}}</b></a>
         <i :id="'time-c-' + this.id" data-toggle="tooltip">{{this.timeAgo()}}</i>
+        <u v-if="this.dateTime !== this.updatedAt">Edited</u>
       </div>
       <div v-if="!this.editing" v-text="this.body" class="body"></div>
       <div class="body" v-if="this.editing">
@@ -40,6 +41,7 @@
     :user="comment.user"
     :comments="comment.comments"
     :dateTime="comment.created_at"
+    :updatedAt="comment.updated_at"
     @delete-comment="deleteCommentEvent"
     @edit-comment="editCommentEvent">
     </comment>
@@ -56,6 +58,7 @@ export default {
     id: Number,
     body: String,
     dateTime: String,
+    updatedAt: String,
     user: Object,
     comments: Array
   },
@@ -142,6 +145,7 @@ export default {
       for (var i = 0; i < this.comments.length; i++) {
         if (this.comments[i].id === comment.id) {
           this.comments[i].body = comment.body
+          this.comments[i].updated_at = comment.updated_at
         }
       }
     },
