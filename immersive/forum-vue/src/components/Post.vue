@@ -7,7 +7,7 @@
     <div v-if="!this.editing" v-text="this.title" class="title"></div>
     <input v-if="this.editing" v-model="newpost.title" @keydown="clearTitleError()" name="title" type="text" class="title" required>
     <div v-if="this.errors.title.length" v-text="this.errors.title" class="text-danger font-size"></div>
-    
+
     <div class="container2">
       <div class="text-gray user-date">
         <!-- view body -->
@@ -15,13 +15,13 @@
         <a href="#" class="username padding-r-5"><b>{{this.user.username}}</b></a>
         <i :id="'time' + this.id" data-toggle="tooltip">{{this.timeAgo()}}</i>
       </div>
-      
+
       <div v-if="!this.editing && this.show_body" v-text="this.body" class="body"></div>
       <div class="body">
         <textarea v-if="this.editing" v-model="newpost.body" @keydown="clearBodyError()" name="body" class="edit-body" required></textarea>
       </div>
       <div v-if="this.errors.body.length" v-text="this.errors.body" class="text-danger font-size"></div>
-      
+
       <div>
         <a v-if="comments.length != 1" href="#" @click.prevent="showComments()" class="ops">{{this.comments.length}} comments</a>
         <a v-if="comments.length == 1" href="#" @click.prevent="showComments()" class="ops">{{this.comments.length}} comment</a>
@@ -43,7 +43,7 @@
         </comment>
         <div v-if="!comments.length">No comments</div>
       </div>
-      
+
       <!-- new comment -->
       <div v-if="this.$store.state.auth" class="comment-container">
         <div>
@@ -132,7 +132,7 @@ export default {
       }
     },
     editPost: function () {
-      if (this.$store.state.user.id == this.user.id) {
+      if (this.$store.state.user.id === this.user.id) {
         this.editing = true
       } else {
         alert('You do not have permission to edit this post')
@@ -188,16 +188,16 @@ export default {
       }
     },
     editPermission () {
-      if (this.$store.state.user.id == this.user.id) {
+      if (this.$store.state.user.id === this.user.id) {
         return true
       } else {
         return false
       }
     },
     deletePermission () {
-      if (this.$store.state.user.id == this.user.id) {
+      if (this.$store.state.user.id === this.user.id) {
         return true
-      } else if (this.$store.state.user.role == 1) {
+      } else if (this.$store.state.user.role === 1) {
         return true
       } else {
         return false
@@ -210,26 +210,24 @@ export default {
       this.errors.title = ''
     },
     postComment () {
-      if (this.newcomment.body.length == 0) {
+      if (this.newcomment.body.length === 0) {
         this.comment_errors.body = 'Body is required'
       } else {
         axios.post('http://127.0.0.1:8000/api/posts/' + this.id + '/new-comment', {
           body: this.newcomment.body,
           user_id: this.$store.state.user.id
-        })
-        .then((response) => {
+        }).then((response) => {
           this.comments.push(response.data.comment)
           this.show_comments = true
           this.newcomment.body = ''
-        })
-        .catch((error) => {
+        }).catch((error) => {
           console.log(error.response.data)
-        });
+        })
       }
     },
     deleteComment (id) {
       for (var i = 0; i < this.comments.length; i++) {
-        if (this.comments[i].id == id) {
+        if (this.comments[i].id === id) {
           this.comments.splice(i, 1)
           break
         }
@@ -237,7 +235,7 @@ export default {
     },
     editComment (comment) {
       for (var i = 0; i < this.comments.length; i++) {
-        if (this.comments[i].id == comment.id) {
+        if (this.comments[i].id === comment.id) {
           this.comments[i].body = comment.body
         }
       }

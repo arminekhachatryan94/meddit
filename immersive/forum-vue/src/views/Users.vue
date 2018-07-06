@@ -46,7 +46,7 @@ export default {
   methods: {
     deleteUser (id) {
       for (var i = 0; i < this.users.length; i++) {
-        if (this.users[i].id == id) {
+        if (this.users[i].id === id) {
           this.users.splice(i, 1)
           break
         }
@@ -54,7 +54,7 @@ export default {
     },
     editUser (user) {
       for (var i = 0; i < this.users.length; i++) {
-        if (this.users[i].id == user.id) {
+        if (this.users[i].id === user.id) {
           this.users[i].role = user.role
           break
         }

@@ -48,7 +48,7 @@ class CommentsTableSeeder extends Seeder
             'post_id' => NULL,
             'comment_id' => '4',
             'user_id' => '1',
-            'body' => 'Commenting a comment... Commented!',
+            'body' => 'Commenting on a comment... Commented!',
             'created_at' => Carbon::yesterday()->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::yesterday()->format('Y-m-d H:i:s')
         ]);
@@ -56,7 +56,7 @@ class CommentsTableSeeder extends Seeder
             'post_id' => NULL,
             'comment_id' => '5',
             'user_id' => '1',
-            'body' => 'Another nexted comment. Last one.',
+            'body' => 'Another nested comment. Last one.',
             'created_at' => Carbon::yesterday()->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::yesterday()->format('Y-m-d H:i:s')
         ]);

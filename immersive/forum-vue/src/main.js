@@ -24,13 +24,13 @@ const store = new Vuex.Store({
   },
   mutations: {
     logout (state) {
-      state.auth = false,
-      state.user.id = '',
-      state.user.first_name = '',
-      state.user.last_name = '',
-      state.user.username = '',
-      state.user.email = '',
-      state.user.role = '',
+      state.auth = false
+      state.user.id = ''
+      state.user.first_name = ''
+      state.user.last_name = ''
+      state.user.username = ''
+      state.user.email = ''
+      state.user.role = ''
       state.user.biography = ''
     },
     login (state, user) {
@@ -43,10 +43,10 @@ const store = new Vuex.Store({
       state.user.role = user.role
       state.user.biography = user.biography
     },
-    username(state, username) {
+    username (state, username) {
       state.username = username
     },
-    biography(state, biography) {
+    biography (state, biography) {
       state.biography = biography
     }
   }

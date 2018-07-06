@@ -33,7 +33,7 @@ export default {
     lastname: String,
     email: String,
     role: Boolean,
-    username: String,
+    username: String
   },
   data () {
     return {

@@ -19,20 +19,20 @@
 <script>
 import Post from '../components/Post'
 import axios from 'axios'
-import EventBus from '../components/event-bus';
+import EventBus from '../components/event-bus'
 
 export default {
   name: 'Posts',
   data: function () {
     return {
-      posts: []
+      posts: Array
     }
   },
   components: { Post },
   methods: {
     deletePost (id) {
       for (var i = 0; i < this.posts.length; i++) {
-        if (this.posts[i].id == id) {
+        if (this.posts[i].id === id) {
           this.posts.splice(i, 1)
           break
         }
@@ -40,7 +40,7 @@ export default {
     },
     editPost (post) {
       for (var i = 0; i < this.posts.length; i++) {
-        if (this.posts[i].id == post.id) {
+        if (this.posts[i].id === post.id) {
           this.posts[i].title = post.title
           this.posts[i].body = post.body
         }

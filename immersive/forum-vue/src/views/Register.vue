@@ -75,38 +75,38 @@ export default {
   methods: {
     onRegister () {
       this.clearAllErrors()
-      var size = 0; // size of errors
+      var size = 0 // size of errors
       var self = this
-      var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      if (this.credentials.first_name.length == 0) {
+      var re = /^(([^<>()[\]\\.,;:\s@]+(\.[^<>()[\]\\.,;:\s@]+)*)|(.+))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      if (this.credentials.first_name.length === 0) {
         this.errors.first_name = 'First name is required.'
         size++
       }
-      if (this.credentials.last_name.length == 0) {
+      if (this.credentials.last_name.length === 0) {
         this.errors.last_name = 'Last name is required.'
         size++
       }
-      if (this.credentials.username.length == 0) {
+      if (this.credentials.username.length === 0) {
         this.errors.username = 'Username is required.'
         size++
       }
-      if (this.credentials.email.length == 0) {
+      if (this.credentials.email.length === 0) {
         this.errors.email = 'Email is required.'
         size++
       }
-      if (this.credentials.password.length == 0) {
+      if (this.credentials.password.length === 0) {
         this.errors.password = 'Password is required.'
         size++
       }
-      if (this.credentials.password_confirmation.length == 0) {
+      if (this.credentials.password_confirmation.length === 0) {
         this.errors.password_confirmation = 'Password confirmation is required.'
         size++
       }
-      if (size == 0 && !re.test(this.credentials.email)) {
+      if (size === 0 && !re.test(this.credentials.email)) {
         this.errors.email = 'Invalid email format.'
         size++
       }
-      if (size == 0) {
+      if (size === 0) {
         axios.post('http://127.0.0.1:8000/api/register', {
           first_name: this.credentials.first_name,
           last_name: this.credentials.last_name,
@@ -120,8 +120,8 @@ export default {
           self.$session.set('auth', true)
           self.$session.set('user', response.data.user)
           self.$store.commit('login', response.data.user)
-          self.$router.push('/posts');
-        }).catch( (error) => {
+          self.$router.push('/posts')
+        }).catch((error) => {
           var errors = error.response.data.errors
           if (typeof errors.first_name !== 'undefined') {
             self.errors.first_name = errors.first_name[0]

@@ -47,14 +47,14 @@ export default {
   methods: {
     onLogin () {
       var self = this
-      var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      if (this.credentials.email.length == 0) {
+      var re = /^(([^<>()[\]\\.,;:\s@]+(\.[^<>()[\]\\.,;:\s@]+)*)|(.+))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      if (this.credentials.email.length === 0) {
         this.errors.email = 'Email is required.'
       }
-      if (this.credentials.password.length == 0) {
+      if (this.credentials.password.length === 0) {
         this.errors.password = 'Password is required.'
       }
-      if ( this.errors.email.length == 0 && !re.test(this.credentials.email)) {
+      if (this.errors.email.length === 0 && !re.test(this.credentials.email)) {
         this.errors.email = 'Invalid email format.'
       }
       if (!this.errors.email.length && !this.errors.password.length) {
@@ -67,11 +67,11 @@ export default {
           self.$session.set('auth', true)
           self.$session.set('user', response.data.user[0])
           self.$store.commit('login', response.data.user[0])
-          self.$router.push('/posts');
+          self.$router.push('/posts')
         }).catch(function (error) {
           if (typeof error.response.data.errors.invalid !== 'undefined') {
             self.errors.other = error.response.data.errors.invalid
-          } 
+          }
         })
       }
     },

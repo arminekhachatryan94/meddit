@@ -32,7 +32,6 @@
 </template>
 
 <script>
-import Role from '../components/Role'
 import User from '../components/User'
 import axios from 'axios'
 
@@ -63,13 +62,13 @@ export default {
   methods: {
     saveUsername () {
       var self = this
-      if( this.username.length == 0 ){
+      if (this.username.length === 0) {
         this.errors.username = 'Username is required.'
       }
-      if( this.password.length == 0 ){
+      if (this.password.length === 0) {
         this.errors.password = 'Password is required.'
       }
-      if( this.password.length != 0 && this.user.username.length != 0 ){
+      if (this.password.length !== 0 && this.user.username.length !== 0) {
         axios.put('http://127.0.0.1:8000/api/' + this.$store.state.user.id + '/settings/username', {
           username: this.username,
           password: this.password
@@ -82,10 +81,10 @@ export default {
           self.$store.commit('username', self.username)
         }).catch(function (error) {
           var errors = error.response.data.errors
-          if( typeof errors.username !== 'undefined' ){
+          if (typeof errors.username !== 'undefined') {
             self.errors.username = errors.username[0]
           }
-          if( typeof errors.password !== 'undefined' ){
+          if (typeof errors.password !== 'undefined') {
             self.errors.password = errors.password[0]
           }
         })
@@ -93,13 +92,13 @@ export default {
     },
     saveBiography () {
       var self = this
-      if( this.biography.length == 0 ){
+      if (this.biography.length === 0) {
         this.errors.biography = 'Biography is required.'
       }
-      if( this.password.length == 0 ){
+      if (this.password.length === 0) {
         this.errors.password = 'Password is required.'
       }
-      if( this.password.length != 0 && this.biography.length != 0 ){
+      if (this.password.length !== 0 && this.biography.length !== 0) {
         axios.put('http://127.0.0.1:8000/api/' + this.$store.state.user.id + '/settings/biography', {
           biography: this.biography,
           password: this.password
@@ -113,10 +112,10 @@ export default {
         }).catch(function (error) {
           var errors = error.response.data.errors
           console.log(errors)
-          if( typeof errors.biography !== 'undefined' ){
+          if (typeof errors.biography !== 'undefined') {
             self.errors.biography = errors.biography[0]
           }
-          if( typeof errors.password !== 'undefined' ){
+          if (typeof errors.password !== 'undefined') {
             self.errors.password = errors.password[0]
           }
         })

@@ -57,7 +57,7 @@ export default {
     body: String,
     dateTime: String,
     user: Object,
-    comments: []
+    comments: Array
   },
   data () {
     return {
@@ -82,7 +82,7 @@ export default {
       document.getElementById('time-c-' + this.id).title = moment(this.dateTime).format('MMMM DD YYYY, h:mma')
     },
     editComment () {
-      if (this.$store.state.user.id == this.user.id) {
+      if (this.$store.state.user.id === this.user.id) {
         this.editing = true
       } else {
         alert('You do not have permission to edit this post')
@@ -132,7 +132,7 @@ export default {
     },
     deleteCommentEvent (id) {
       for (var i = 0; i < this.comments.length; i++) {
-        if (this.comments[i].id == id) {
+        if (this.comments[i].id === id) {
           this.comments.splice(i, 1)
           break
         }
@@ -140,22 +140,22 @@ export default {
     },
     editCommentEvent (comment) {
       for (var i = 0; i < this.comments.length; i++) {
-        if (this.comments[i].id == comment.id) {
+        if (this.comments[i].id === comment.id) {
           this.comments[i].body = comment.body
         }
       }
     },
     editPermission () {
-      if (this.$store.state.user.id == this.user.id) {
+      if (this.$store.state.user.id === this.user.id) {
         return true
       } else {
         return false
       }
     },
     deletePermission () {
-      if (this.$store.state.user.id == this.user.id) {
+      if (this.$store.state.user.id === this.user.id) {
         return true
-      } else if (this.$store.state.user.role == 1) {
+      } else if (this.$store.state.user.role === 1) {
         return true
       } else {
         return false
@@ -175,16 +175,14 @@ export default {
       axios.post('http://127.0.0.1:8000/api/comments/' + this.id + '/new-comment', {
         body: this.publish_comment.body,
         user_id: this.$store.state.user.id
-      })
-      .then((response) => {
+      }).then((response) => {
         this.comments.unshift(response.data.comment)
         this.publish_comment.body = ''
         this.errors.body = ''
         this.replying = false
-      })
-      .catch((error) => {
+      }).catch((error) => {
         console.log(error.response.data)
-      });
+      })
     }
   },
   mounted () {

@@ -38,7 +38,7 @@
 
 <script>
 import axios from 'axios'
-import EventBus from './event-bus';
+import EventBus from './event-bus'
 
 export default {
   name: 'Profile',
@@ -62,7 +62,7 @@ export default {
         pages[i].style.color = 'black'
         pages[i].style.fontWeight = 'normal'
       }
-      this.$router.push('/settings');
+      this.$router.push('/settings')
     },
     showNewPost: function () {
       if (this.showpost) {
@@ -75,10 +75,10 @@ export default {
       var self = this
       this.errors.title = ''
       this.errors.body = ''
-      if (this.newpost.title.length == 0) {
+      if (this.newpost.title.length === 0) {
         this.errors.title = 'Title is required.'
       }
-      if (this.newpost.body.length == 0) {
+      if (this.newpost.body.length === 0) {
         this.errors.body = 'Body is required.'
       }
       if (!this.errors.body.length && !this.errors.title.length) {
@@ -86,15 +86,13 @@ export default {
           title: this.newpost.title,
           body: this.newpost.body,
           user_id: this.$store.state.user.id
-        })
-        .then((response) => {
+        }).then((response) => {
           self.newpost.title = ''
           self.newpost.body = ''
-          EventBus.$emit('new', response.data.post);
+          EventBus.$emit('new', response.data.post)
+        }).catch((error) => {
+          console.log(error.response.data)
         })
-        .catch((error) => {
-          console.log(error.response.data);
-        });
       }
     },
     clearBodyError () {
