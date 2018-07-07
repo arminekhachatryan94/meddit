@@ -4,6 +4,7 @@ import Home from '@/views/Home'
 import Login from '@/views/Login'
 import Register from '@/views/Register'
 import Posts from '@/views/Posts'
+import SinglePost from '@/views/SinglePost'
 import Users from '@/views/Users'
 import Settings from '@/views/Settings'
 
@@ -20,6 +21,11 @@ export default new Router({
       path: '/posts',
       name: 'Posts',
       component: Posts
+    },
+    {
+      path: '/posts/:id',
+      name: 'SinglePost',
+      component: SinglePost
     },
     {
       path: '/login',

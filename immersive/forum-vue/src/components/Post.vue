@@ -1,7 +1,7 @@
 <template>
 <div class="post-container bg-white text-left row">
   <div class="col-md-1 padding-top-15">
-    <img src="../assets/posts/chat-bubble.png" width="50">
+    <img @click="redirectTo()" class="cursor" src="../assets/posts/chat-bubble.png" width="50">
   </div>
   <div class="col-md-11">
     <div v-if="!this.editing" v-text="this.title" class="title"></div>
@@ -242,6 +242,9 @@ export default {
           this.comments[i].body = comment.body
         }
       }
+    },
+    redirectTo () {
+      this.$router.push('/posts/' + this.id)
     }
   },
   mounted () {

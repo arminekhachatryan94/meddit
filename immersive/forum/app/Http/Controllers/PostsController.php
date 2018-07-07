@@ -55,16 +55,19 @@ class PostsController extends Controller
     }
 
     public function post($id) {
-        $post = Post::where('id', $id)->get();
-        if( !count($post) ){
-            $post->comments;
-            $post->user;
+        $post = Post::where('id', $id)->first();
+        if( !$post ){
             return response()->json([
                 'errors' => [
                     'invalid' => 'Post does not exist'
                 ]
             ], 401);
         } else {
+            $post->comments;
+            $post->user;
+            foreach ($post->comments as $comment ){
+                $this->comments($comment);
+            }
             return response()->json([
                 'post' => $post
             ], 201);
