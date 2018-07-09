@@ -9,17 +9,16 @@ use App\Comment;
 use App\UserRole;
 use Validator;
 
+use App\Contracts\PostContract;
+
 class PostsController extends Controller
 {
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'user_id' => 'required|max:255',
-            'title' => 'required|string|max:255',
-            'body' => 'required|string|max:255'
-        ]);
+    protected $postRetriever = null;
+
+    public function __construct(PostContract $postRetriever){
+        $this->postRetriever = $postRetriever;
     }
-    
+
     protected function save(array $data)
     {
         return Post::create([
@@ -102,30 +101,7 @@ class PostsController extends Controller
             'body' => $request->input('body')
         ];
 
-        $post = Post::find($id);
-        if( $post ){
-            $errors = $this->validator($request->all())->errors();
-            if( count($errors) ) {
-                return response()->json([
-                    'errors' => $errors
-                ], 401);
-            } else {
-                if( $post->user_id == $request->input('user_id') ){
-                    $post->title = $request->input('title');
-                    $post->body = $request->input('body');
-                    $post->save();
-                    return response()->json(['post' => $post], 201);
-                } else {
-                    return response()->json(['errors' => ['invalid' => 'You do not have permission to edit this post']], 401);
-                }
-            }
-        } else {
-            return response()->json([
-                'errors' => [
-                    'invalid' => 'Post not found'
-                ]
-            ], 401);
-        }
+        return $this->postRetriever->editPost($req, $id);
     }
 
     public function delete(Request $request, $id) {
