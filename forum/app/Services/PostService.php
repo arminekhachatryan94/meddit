@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\Contracts\PostContract;
 use App\Post;
+use App\User;
 use Validator;
 
 class PostService implements PostContract {
@@ -38,6 +39,33 @@ class PostService implements PostContract {
             return response()->json([
                 'errors' => [
                     'invalid' => 'Post not found'
+                ]
+            ], 401);
+        }
+    }
+
+    public function deletePost($request, $id){
+        $post = Post::find($id);
+
+        if( $post ){
+            $user = User::where('id', $request->input('user_id'))->get();
+            if( ($post->user_id == $request->input('user_id')) || ($user[0]->role == 1) ){
+                $post->delete();
+                return response()->json([
+                    'message' => 'Post was successfully deleted',
+                    'post' => $id
+                ], 201);
+            } else {
+                return response()->json([
+                    'errors' => [
+                        'invalid' => 'You do not have permission to delete this post'
+                    ]
+                ], 401);
+            }
+        } else {
+            return response()->json([
+                'errors' => [
+                    'invalid' => 'Post does not exist'
                 ]
             ], 401);
         }

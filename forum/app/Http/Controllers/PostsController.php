@@ -105,29 +105,6 @@ class PostsController extends Controller
     }
 
     public function delete(Request $request, $id) {
-        $post = Post::find($id);
-
-        if( $post ){
-            $user = User::where('id', $request->input('user_id'))->get();
-            if( ($post->user_id == $request->input('user_id')) || ($user[0]->role == 1) ){
-                $post->delete();
-                return response()->json([
-                    'message' => 'Post was successfully deleted',
-                    'post' => $id
-                ], 201);
-            } else {
-                return response()->json([
-                    'errors' => [
-                        'invalid' => 'You do not have permission to delete this post'
-                    ]
-                ], 401);
-            }
-        } else {
-            return response()->json([
-                'errors' => [
-                    'invalid' => 'Post does not exist'
-                ]
-            ], 401);
-        }
+        return $this->postRetriever->deletePost($request, $id);
     }
 }
