@@ -44,12 +44,12 @@ class PostService implements PostContract {
         }
     }
 
-    public function deletePost($request, $id){
+    public function deletePost($postData, $id){
         $post = Post::find($id);
 
         if( $post ){
-            $user = User::where('id', $request->input('user_id'))->get();
-            if( ($post->user_id == $request->input('user_id')) || ($user[0]->role == 1) ){
+            $user = User::where('id', $postData['user_id'])->get();
+            if( ($post->user_id == $postData['user_id']) || ($user[0]->role == 1) ){
                 $post->delete();
                 return response()->json([
                     'message' => 'Post was successfully deleted',

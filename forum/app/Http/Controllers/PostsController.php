@@ -95,16 +95,20 @@ class PostsController extends Controller
     }
 
     public function edit(Request $request, $id) {
-        $req = [
+        $data = [
             'user_id' => $request->input('user_id'),
             'title' => $request->input('title'),
             'body' => $request->input('body')
         ];
 
-        return $this->postRetriever->editPost($req, $id);
+        return $this->postRetriever->editPost($data, $id);
     }
 
     public function delete(Request $request, $id) {
-        return $this->postRetriever->deletePost($request, $id);
+        $data = [
+            'user_id' => $request->input('user_id')
+        ];
+
+        return $this->postRetriever->deletePost($data, $id);
     }
 }
