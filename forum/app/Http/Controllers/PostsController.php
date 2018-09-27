@@ -19,15 +19,6 @@ class PostsController extends Controller
         $this->postRetriever = $postRetriever;
     }
 
-    protected function save(array $data)
-    {
-        return Post::create([
-            'user_id' => $data['user_id'],
-            'title' => $data['title'],
-            'body' => $data['body']
-        ]);
-    }
-
     protected function comments(Comment $comment) {
         $comment->comments;
         $comment->user;
@@ -74,24 +65,13 @@ class PostsController extends Controller
     }
 
     public function create(Request $request) {
-        $errors = $this->validator($request->all())->errors();
-        if( count($errors) == 0 ){
-            $post = User::where('id', $request->input('user_id'))->exists();
-            if( $post ){
-                $newpost = $this->save($request->all());
-                $newpost->comments;
-                $newpost->user;
-                return response()->json([ 'post' => $newpost ], 201);
-            } else {
-                return response()->json([
-                    'errors' => [
-                        'invalid' => 'User does not exist'
-                    ]
-                ], 401);
-            }
-        } else {
-            return response()->json([ 'errors' => $errors ], 401);
-        };
+        $data = [
+            'user_id' => $request->input('user_id'),
+            'title' => $request->input('title'),
+            'body' => $request->input('body')
+        ];
+        
+        return $this->postRetriever->createPost($data);
     }
 
     public function edit(Request $request, $id) {
