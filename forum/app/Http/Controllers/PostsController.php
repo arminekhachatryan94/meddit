@@ -111,8 +111,8 @@ class PostsController extends Controller
         $post = $this->postRetriever->getPost($id);
 
         if( $post ){
-            $user = $this->userRetriever->getUser($id);
-            if( ($post->user_id == $request->input('user_id')) || ($user[0]->role == 1) ){
+            $user = $this->userRetriever->getUser($request->input('user_id'));
+            if( ($post->user_id == $request->input('user_id')) || ($user->role == 1) ){
                 $deleted = $this->postRetriever->deletePost($post);
                 if( $deleted ){
                     return response()->json([
