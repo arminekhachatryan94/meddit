@@ -10,13 +10,16 @@ use App\UserRole;
 use Validator;
 
 use App\Contracts\PostContract;
+use App\Contracts\UserContract;
 
 class PostsController extends Controller
 {
     protected $postRetriever = null;
+    protected $userRetriever = null;
 
-    public function __construct(PostContract $postRetriever){
+    public function __construct(PostContract $postRetriever, UserContract $userRetriever){
         $this->postRetriever = $postRetriever;
+        $this->userRetriever = $userRetriever;
     }
 
     protected function save(array $data)
@@ -105,16 +108,24 @@ class PostsController extends Controller
     }
 
     public function delete(Request $request, $id) {
-        $post = Post::find($id);
+        $post = $this->postRetriever->getPost($id);
 
         if( $post ){
-            $user = User::where('id', $request->input('user_id'))->get();
-            if( ($post->user_id == $request->input('user_id')) || ($user[0]->role == 1) ){
-                $post->delete();
-                return response()->json([
-                    'message' => 'Post was successfully deleted',
-                    'post' => $id
-                ], 201);
+            $user = $this->userRetriever->getUser($request->input('user_id'));
+            if( ($post->user_id == $request->input('user_id')) || ($user->role == 1) ){
+                $deleted = $this->postRetriever->deletePost($post);
+                if( $deleted ){
+                    return response()->json([
+                        'message' => 'Post was successfully deleted',
+                        'post' => $id
+                    ], 201);
+                } else {
+                    return response()->json([
+                        'errors' => [
+                            'invalid' => 'Failed to delete this post'
+                        ]
+                    ], 401);
+                }
             } else {
                 return response()->json([
                     'errors' => [
@@ -129,5 +140,6 @@ class PostsController extends Controller
                 ]
             ], 401);
         }
+        // return $this->postRetriever->deletePost($request, $id);
     }
 }
