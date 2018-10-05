@@ -20,6 +20,10 @@ class PostService implements PostContract {
     public function getPost($id){
         return Post::find($id);
     }
+
+    public function getAllPosts(){
+        return Post::orderBy('created_at', 'desc')->get();
+    }
     
     public function editPost($postData, $id){
         $post = Post::find($id);

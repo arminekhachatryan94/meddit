@@ -42,7 +42,7 @@ class PostsController extends Controller
     }
 
     public function posts() {
-        $posts = Post::orderBy('created_at', 'desc')->get();
+        $posts = $this->postRetriever->getAllPosts();
         foreach ( $posts as $post){
             $post->user;
             $post->comments;
