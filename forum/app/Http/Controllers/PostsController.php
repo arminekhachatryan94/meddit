@@ -57,7 +57,7 @@ class PostsController extends Controller
     }
 
     public function post($id) {
-        $post = Post::where('id', $id)->first();
+        $post = $this->postRetriever->getPost($id);
         if( !$post ){
             return response()->json([
                 'errors' => [
