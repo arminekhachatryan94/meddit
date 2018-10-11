@@ -95,7 +95,7 @@ class PostsController extends Controller
                         'errors' => [
                             'invalid' => 'Unable to create user.'
                         ]
-                        ], 406);
+                    ], 406);
                 }
             } else {
                 return response()->json([
