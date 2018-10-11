@@ -22,12 +22,12 @@ class PostsController extends Controller
         $this->userRetriever = $userRetriever;
     }
 
-    protected function save(array $data)
+    protected function validator(array $data)
     {
-        return Post::create([
-            'user_id' => $data['user_id'],
-            'title' => $data['title'],
-            'body' => $data['body']
+        return Validator::make($data, [
+            'user_id' => 'required|max:255',
+            'title' => 'required|string|max:255',
+            'body' => 'required|string|max:255'
         ]);
     }
 
@@ -79,21 +79,33 @@ class PostsController extends Controller
     public function create(Request $request) {
         $errors = $this->validator($request->all())->errors();
         if( count($errors) == 0 ){
-            $post = User::where('id', $request->input('user_id'))->exists();
-            if( $post ){
-                $newpost = $this->save($request->all());
-                $newpost->comments;
-                $newpost->user;
-                return response()->json([ 'post' => $newpost ], 201);
+            $user_exists = $this->userRetriever->existsUser($request->input('user_id'));
+            if( $user_exists ){
+                $post = new Post();
+                $post->title = $request->input('title');
+                $post->body = $request->input('body');
+                $post->user_id = $request->input('user_id');
+                $created = $this->postRetriever->createPost($post);
+                if( $created ){
+                    $post->comments;
+                    $post->user;
+                    return response()->json([ 'post' => $post ], 201);
+                } else {
+                    return response()->json([
+                        'errors' => [
+                            'invalid' => 'Unable to create user.'
+                        ]
+                        ], 406);
+                }
             } else {
                 return response()->json([
                     'errors' => [
                         'invalid' => 'User does not exist'
                     ]
-                ], 401);
+                ], 404);
             }
         } else {
-            return response()->json([ 'errors' => $errors ], 401);
+            return response()->json([ 'errors' => $errors ], 400);
         };
     }
 
