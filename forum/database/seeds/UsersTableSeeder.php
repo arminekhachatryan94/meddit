@@ -39,30 +39,5 @@ class UsersTableSeeder extends Seeder
             factory(App\UserRole::class, 1)->create(['user_id' => $u->id]);
             factory(App\Biography::class, 1)->create(['user_id' => $u->id]);
         });
-        
-        /*
-        // user 2
-        DB::table('users')->insert([
-            'first_name' => 'Lily',
-            'last_name' => 'Mily',
-            'username' => 'lily',
-            'email' => 'lily@gmail.com',
-            'password' => bcrypt('secret'),
-            'created_at' => Carbon::yesterday()->format('Y-m-d H:i:s'),
-            'updated_at' => Carbon::yesterday()->format('Y-m-d H:i:s')
-        ]);
-        DB::table('user_roles')->insert([
-            'user_id' => '2',
-            'role' => '0',
-            'created_at' => Carbon::yesterday()->format('Y-m-d H:i:s'),
-            'updated_at' => Carbon::yesterday()->format('Y-m-d H:i:s')
-        ]);
-        DB::table('biographies')->insert([
-            'user_id' => '2',
-            'description' => '',
-            'created_at' => Carbon::yesterday()->format('Y-m-d H:i:s'),
-            'updated_at' => Carbon::yesterday()->format('Y-m-d H:i:s')
-        ]);
-        */
     }
 }
