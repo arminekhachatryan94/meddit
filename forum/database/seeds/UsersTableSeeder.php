@@ -34,7 +34,13 @@ class UsersTableSeeder extends Seeder
             'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
+
+        factory(App\User::class, 5)->create()->each(function($u) {
+            factory(App\UserRole::class, 1)->create(['user_id' => $u->id]);
+            factory(App\Biography::class, 1)->create(['user_id' => $u->id]);
+        });
         
+        /*
         // user 2
         DB::table('users')->insert([
             'first_name' => 'Lily',
@@ -57,5 +63,6 @@ class UsersTableSeeder extends Seeder
             'created_at' => Carbon::yesterday()->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::yesterday()->format('Y-m-d H:i:s')
         ]);
+        */
     }
 }
