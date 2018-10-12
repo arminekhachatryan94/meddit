@@ -20,9 +20,9 @@ class CommentsTableSeeder extends Seeder
             $comments = App\Comment::all()->pluck('id')->toArray();
             if( $rand % 2 == 0 && count($comments) > 0 ){
                 $cid = array_rand($comments);
-                factory(App\Comment::class, 1)->create(['user_id' => $uid], ['post_id' => NULL], ['comment_id' => $cid]);
+                factory(App\Comment::class, 1)->create(['user_id' => $uid, 'post_id' => NULL, 'comment_id' => $cid]);
             } else {
-                factory(App\Comment::class, 1)->create(['user_id' => $uid], ['post_id' => $rand], ['comment_id' => NULL]);
+                factory(App\Comment::class, 1)->create(['user_id' => $uid, 'post_id' => $rand, 'comment_id' => NULL]);
             }
         }
     }
