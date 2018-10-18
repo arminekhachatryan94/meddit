@@ -8,13 +8,8 @@ use Validator;
 
 class PostService implements PostContract {
 
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'user_id' => 'required|max:255',
-            'title' => 'required|string|max:255',
-            'body' => 'required|string|max:255'
-        ]);
+    public function createPost(Post $post){
+        return $post->save();
     }
 
     public function getPost($id){
