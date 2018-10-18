@@ -218,4 +218,51 @@ class PostServiceTest extends TestCase
             ]);
         }
     }
+
+    /**
+     * Delete a post.
+     *
+     * @test
+     */
+    public function testDeletePost()
+    {
+        $postService = new PostService();
+
+        $user = factory(User::class, 1)->create()->first();
+        $posts = factory(Post::class, 10)->create(['user_id' => $user->id]);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'username' => $user->username,
+            'password' => $user->password,
+            'remember_token' => $user->remember_token,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at
+        ]);
+
+        foreach( $posts as $post ){
+            $this->assertDatabaseHas('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+
+            $postService->deletePost($post);
+
+            $this->assertDatabaseMissing('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+        }
+    }
 }
