@@ -42,7 +42,7 @@ class PostsController extends Controller
     }
 
     public function posts() {
-        $posts = Post::orderBy('created_at', 'desc')->get();
+        $posts = $this->postRetriever->getAllPosts();
         foreach ( $posts as $post){
             $post->user;
             $post->comments;
@@ -53,17 +53,17 @@ class PostsController extends Controller
 
         return response()->json([
             'posts' => $posts
-        ], 201);
+        ], 200);
     }
 
     public function post($id) {
-        $post = Post::where('id', $id)->first();
+        $post = $this->postRetriever->getPost($id);
         if( !$post ){
             return response()->json([
                 'errors' => [
                     'invalid' => 'Post does not exist'
                 ]
-            ], 401);
+            ], 404);
         } else {
             $post->comments;
             $post->user;
@@ -72,7 +72,7 @@ class PostsController extends Controller
             }
             return response()->json([
                 'post' => $post
-            ], 201);
+            ], 200);
         }
     }
 
@@ -104,7 +104,32 @@ class PostsController extends Controller
             'body' => $request->input('body')
         ];
 
-        return $this->postRetriever->editPost($req, $id);
+        $post = $this->postRetriever->getPost($id);
+        if( $post ){	
+            $errors = validator($request->all())->errors();
+            if( count($errors) ) {	
+                return response()->json([	
+                    'errors' => $errors	
+                ], 400);	
+            } else {	
+                if( $post->user_id == $request->input('user_id') ){	
+                    $edit = $this->postRetriever->editPost($post, $req);
+                    if( $edit ){
+                        return response()->json(['post' => $post], 202);
+                    } else {
+                        return response()->json(['errors' => ['invalid' => 'Unable to save changes']], 400);
+                    }
+                } else {	
+                    return response()->json(['errors' => ['invalid' => 'You do not have permission to edit this post']], 401);	
+                }	
+            }	
+        } else {	
+            return response()->json([	
+                'errors' => [	
+                    'invalid' => 'Post not found'	
+                ]	
+            ], 404);	
+        }
     }
 
     public function delete(Request $request, $id) {
@@ -118,13 +143,13 @@ class PostsController extends Controller
                     return response()->json([
                         'message' => 'Post was successfully deleted',
                         'post' => $id
-                    ], 201);
+                    ], 200);
                 } else {
                     return response()->json([
                         'errors' => [
                             'invalid' => 'Failed to delete this post'
                         ]
-                    ], 401);
+                    ], 400);
                 }
             } else {
                 return response()->json([
@@ -138,8 +163,7 @@ class PostsController extends Controller
                 'errors' => [
                     'invalid' => 'Post does not exist'
                 ]
-            ], 401);
+            ], 404);
         }
-        // return $this->postRetriever->deletePost($request, $id);
     }
 }
