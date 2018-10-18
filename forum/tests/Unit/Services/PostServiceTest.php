@@ -116,7 +116,7 @@ class PostServiceTest extends TestCase
 
         $user = factory(User::class, 1)->create()->first();
         $posts = factory(Post::class, 10)->create(['user_id' => $user->id]);
-        $posts = \json_decode($posts);
+        $posts = json_decode($posts);
         usort($posts, function($a, $b) { // sort posts array in descending order of created_at
             return strtotime($a->created_at) < strtotime($b->created_at);
         });
@@ -153,6 +153,69 @@ class PostServiceTest extends TestCase
             if( $i > 0 ){
                 $this->assertTrue(strtotime($posts[$i-1]->created_at) > strtotime($posts[$i]->created_at));
             }
+        }
+    }
+
+    /**
+     * Edit a post.
+     *
+     * @test
+     */
+    public function testEditPost()
+    {
+        $postService = new PostService();
+
+        $user = factory(User::class, 1)->create()->first();
+        $posts = factory(Post::class, 10)->create(['user_id' => $user->id]);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'username' => $user->username,
+            'password' => $user->password,
+            'remember_token' => $user->remember_token,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at
+        ]);
+
+        foreach( $posts as $post ){
+            $this->assertDatabaseHas('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+
+            $oldpost = Post::where('id', $post->id)->first();
+
+            $req = [
+                'title' => 'example title',
+                'body' => 'example body'
+            ];
+            
+            $postService->editPost($post, $req);
+
+            $this->assertDatabaseMissing('posts', [
+                'id' => $oldpost->id,
+                'user_id' => $oldpost->user_id,
+                'title' => $oldpost->title,
+                'body' => $oldpost->body,
+                'created_at' => $oldpost->created_at,
+                'updated_at' => $oldpost->updated_at
+            ]);
+            
+            $this->assertDatabaseHas('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
         }
     }
 }
