@@ -13,8 +13,55 @@ class PostServiceTest extends TestCase
 {
     use DatabaseMigrations;
 
-    public function setUp(){
+    public function setUp()
+    {
         parent::setUp();
+    }
+
+    /**
+     * Create a post.
+     *
+     * @test
+     */
+    public function testcreatePost()
+    {
+        $postService = new PostService();
+
+        $user = factory(User::class, 1)->create()->first();
+        $posts = factory(Post::class, 10)->make(['user_id' => $user->id]);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'username' => $user->username,
+            'password' => $user->password,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at
+        ]);
+
+        foreach( $posts as $post ){
+            $this->assertDatabaseMissing('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+
+            $postService->createPost($post);
+            
+            $this->assertDatabaseHas('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+        }
     }
 
     /**
@@ -88,7 +135,7 @@ class PostServiceTest extends TestCase
 
         $db_posts = $postService->getAllPosts();
 
-        for( $i = 0; $i < 10; $i++ ){
+        for( $i = 0; $i < count($posts); $i++ ){
             $this->assertDatabaseHas('posts', [
                 'id' => $posts[$i]->id,
                 'user_id' => $posts[$i]->user_id,
