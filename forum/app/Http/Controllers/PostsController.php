@@ -3,23 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Post;
-use App\User;
-use App\Comment;
-use App\UserRole;
-use Validator;
-
 use App\Contracts\PostContract;
 use App\Contracts\UserContract;
+use App\Post;
+use App\Comment;
+use Validator;
 
 class PostsController extends Controller
 {
-    protected $postRetriever = null;
-    protected $userRetriever = null;
+    protected $postService = null;
+    protected $userService = null;
 
-    public function __construct(PostContract $postRetriever, UserContract $userRetriever){
-        $this->postRetriever = $postRetriever;
-        $this->userRetriever = $userRetriever;
+    public function __construct(PostContract $postService, UserContract $userService){
+        $this->postService = $postService;
+        $this->userService = $userService;
     }
 
     protected function validator(array $data)
@@ -42,7 +39,7 @@ class PostsController extends Controller
     }
 
     public function posts() {
-        $posts = $this->postRetriever->getAllPosts();
+        $posts = $this->postService->getAllPosts();
         foreach ( $posts as $post){
             $post->user;
             $post->comments;
@@ -57,7 +54,7 @@ class PostsController extends Controller
     }
 
     public function post($id) {
-        $post = $this->postRetriever->getPost($id);
+        $post = $this->postService->getPost($id);
         if( !$post ){
             return response()->json([
                 'errors' => [
@@ -79,13 +76,13 @@ class PostsController extends Controller
     public function create(Request $request) {
         $errors = $this->validator($request->all())->errors();
         if( count($errors) == 0 ){
-            $user_exists = $this->userRetriever->existsUser($request->input('user_id'));
+            $user_exists = $this->userService->existsUser($request->input('user_id'));
             if( $user_exists ){
                 $post = new Post();
                 $post->title = $request->input('title');
                 $post->body = $request->input('body');
                 $post->user_id = $request->input('user_id');
-                $created = $this->postRetriever->createPost($post);
+                $created = $this->postService->createPost($post);
                 if( $created ){
                     $post->comments;
                     $post->user;
@@ -116,16 +113,16 @@ class PostsController extends Controller
             'body' => $request->input('body')
         ];
 
-        $post = $this->postRetriever->getPost($id);
+        $post = $this->postService->getPost($id);
         if( $post ){	
             $errors = validator($request->all())->errors();
             if( count($errors) ) {	
                 return response()->json([	
                     'errors' => $errors	
-                ], 400);	
+                ], 400);
             } else {	
                 if( $post->user_id == $request->input('user_id') ){	
-                    $edit = $this->postRetriever->editPost($post, $req);
+                    $edit = $this->postService->editPost($post, $req);
                     if( $edit ){
                         return response()->json(['post' => $post], 202);
                     } else {
@@ -145,12 +142,12 @@ class PostsController extends Controller
     }
 
     public function delete(Request $request, $id) {
-        $post = $this->postRetriever->getPost($id);
+        $post = $this->postService->getPost($id);
 
         if( $post ){
-            $user = $this->userRetriever->getUser($request->input('user_id'));
+            $user = $this->userService->getUser($request->input('user_id'));
             if( ($post->user_id == $request->input('user_id')) || ($user->role == 1) ){
-                $deleted = $this->postRetriever->deletePost($post);
+                $deleted = $this->postService->deletePost($post);
                 if( $deleted ){
                     return response()->json([
                         'message' => 'Post was successfully deleted',

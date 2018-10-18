@@ -13,14 +13,11 @@ use Faker\Generator as Faker;
 |
 */
 
-$factory->define(App\User::class, function (Faker $faker) {
+$factory->define(App\Post::class, function (Faker $faker) {
     return [
-        'first_name' => $faker->firstName,
-        'last_name' => $faker->lastName,
-        'username' => $faker->unique()->userName,
-        'email' => $faker->unique()->safeEmail,
-        'password' => Hash::make($faker->password), // secret
-        'created_at' => $faker->dateTime,
-        'remember_token' => str_random(10),
+        'user_id' => 'factory:App\User',
+        'title' => $faker->sentence,
+        'body' => $faker->paragraph,
+        'created_at' => $faker->dateTime
     ];
 });
