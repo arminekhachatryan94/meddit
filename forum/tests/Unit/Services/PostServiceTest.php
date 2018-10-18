@@ -23,7 +23,7 @@ class PostServiceTest extends TestCase
      *
      * @test
      */
-    public function testcreatePost()
+    public function test_create_post()
     {
         $postService = new PostService();
 
@@ -69,7 +69,7 @@ class PostServiceTest extends TestCase
      *
      * @test
      */
-    public function testGetPost()
+    public function test_get_post()
     {
         $postService = new PostService();
 
@@ -110,7 +110,7 @@ class PostServiceTest extends TestCase
      *
      * @test
      */
-    public function testGetAllPosts()
+    public function test_get_all_posts()
     {
         $postService = new PostService();
 
@@ -161,7 +161,7 @@ class PostServiceTest extends TestCase
      *
      * @test
      */
-    public function testEditPost()
+    public function test_edit_post()
     {
         $postService = new PostService();
 
@@ -224,7 +224,7 @@ class PostServiceTest extends TestCase
      *
      * @test
      */
-    public function testDeletePost()
+    public function test_delete_post()
     {
         $postService = new PostService();
 
