@@ -17,6 +17,7 @@ class UserService implements UserContract {
             'password' => Hash::make($data['password']),
         ]);
     }
+    
     public function getUser($id){
         return User::where('id', $id)->first();
     }
