@@ -3,7 +3,6 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use App\Contracts\PostContract;
 use App\Services\PostService;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use App\User;
