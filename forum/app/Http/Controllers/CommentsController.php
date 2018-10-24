@@ -65,7 +65,7 @@ class CommentsController extends Controller
         $errors = $this->validator($req)->errors();
 
         if( count($errors) == 0 ){
-            $post = Post::where('id', $id)->exists();
+            $post = $this->postService->existsPost($id);
             $user = $this->userService->existsUser($request->input('user_id'));
             if( $post && $user ){
                 $comment = $this->save($req);

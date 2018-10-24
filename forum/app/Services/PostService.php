@@ -29,5 +29,9 @@ class PostService implements PostContract {
     public function deletePost(Post $post){
         return $post->delete();
     }
+
+    public function existsPost($id){
+        return Post::where('id', $id)->exists();
+    }
 }
 ?>

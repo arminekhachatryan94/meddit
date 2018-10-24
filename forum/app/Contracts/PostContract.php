@@ -9,5 +9,6 @@ interface PostContract{
     public function getAllPosts();
     public function editPost(Post $post, $req);
     public function deletePost(Post $post);
+    public function existsPost($id);
 }
 ?>
