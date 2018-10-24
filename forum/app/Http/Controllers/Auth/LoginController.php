@@ -60,7 +60,7 @@ class LoginController extends Controller
                     'errors' => [
                         'invalid' => 'Invalid credentials. Please try again.'
                     ]
-                ], 401);
+                ], 404);
             } else {
                 $user = $this->userService->getUserWithEmail($request->input('email'));
                 return response()->json([
