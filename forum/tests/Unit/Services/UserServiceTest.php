@@ -26,39 +26,41 @@ class UserServiceTest extends TestCase
     {
         $userService = new UserService();
 
-        $user = factory(User::class, 1)->make()->first();
+        $users = factory(User::class, 5)->make();
         
-        $this->assertDatabaseMissing('users', [
-            'id' => $user->id,
-            'first_name' => $user->first_name,
-            'last_name' => $user->last_name,
-            'email' => $user->email,
-            'username' => $user->username,
-            'password' => $user->password,
-            'created_at' => $user->created_at,
-            'updated_at' => $user->updated_at
-        ]);
+        foreach( $users as $user ){
+            $this->assertDatabaseMissing('users', [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'username' => $user->username,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]);
 
-        $user = $userService->createUser(array(
-            'id' => $user->id,
-            'first_name' => $user->first_name,
-            'last_name' => $user->last_name,
-            'email' => $user->email,
-            'username' => $user->username,
-            'password' => $user->password,
-            'created_at' => $user->created_at,
-            'updated_at' => $user->updated_at
-        ));
+            $user = $userService->createUser(array(
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'username' => $user->username,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ));
 
-        $this->assertDatabaseHas('users', [
-            'id' => $user->id,
-            'first_name' => $user->first_name,
-            'last_name' => $user->last_name,
-            'email' => $user->email,
-            'username' => $user->username,
-            'password' => $user->password,
-            'created_at' => $user->created_at,
-            'updated_at' => $user->updated_at
-        ]);
+            $this->assertDatabaseHas('users', [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'username' => $user->username,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]);
+        }
     }
 }
