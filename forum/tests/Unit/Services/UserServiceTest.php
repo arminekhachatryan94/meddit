@@ -99,4 +99,34 @@ class UserServiceTest extends TestCase
             $this->assertEquals($user->updated_at, $getUser->updated_at);
         }
     }
+
+    public function test_get_user_with_email()
+    {
+        $userService = new UserService();
+
+        $users = factory(User::class, 5)->create();
+
+        foreach( $users as $user ){
+            $this->assertDatabaseHas('users', [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'username' => $user->username,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]);
+
+            $getUser = $userService->getUserWithEmail($user->email);
+            $this->assertEquals($user->id, $getUser->id);
+            $this->assertEquals($user->first_name, $getUser->first_name);
+            $this->assertEquals($user->last_name, $getUser->last_name);
+            $this->assertEquals($user->email, $getUser->email);
+            $this->assertEquals($user->username, $getUser->username);
+            $this->assertEquals($user->password, $getUser->password);
+            $this->assertEquals($user->created_at, $getUser->created_at);
+            $this->assertEquals($user->updated_at, $getUser->updated_at);
+        }
+    }
 }
