@@ -12,20 +12,21 @@ class UserServiceTest extends TestCase
 {
     use DatabaseMigrations;
 
+    protected $userService = null;
+
     public function setUp()
     {
         parent::setUp();
+        $this->userService = new UserService();
     }
 
     /**
-     * Create a user.
+     * Test create a user.
      *
      * @test
      */
     public function test_create_user()
     {
-        $userService = new UserService();
-
         $users = factory(User::class, 5)->make();
         
         foreach( $users as $user ){
@@ -40,7 +41,7 @@ class UserServiceTest extends TestCase
                 'updated_at' => $user->updated_at
             ]);
 
-            $user = $userService->createUser(array(
+            $user = $this->userService->createUser(array(
                 'id' => $user->id,
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
@@ -66,14 +67,12 @@ class UserServiceTest extends TestCase
     
 
     /**
-     * Get a user.
+     * Test get a user.
      *
      * @test
      */
     public function test_get_user()
     {
-        $userService = new UserService();
-
         $users = factory(User::class, 5)->create();
 
         foreach( $users as $user ){
@@ -88,7 +87,7 @@ class UserServiceTest extends TestCase
                 'updated_at' => $user->updated_at
             ]);
 
-            $getUser = $userService->getUser($user->id);
+            $getUser = $this->userService->getUser($user->id);
             $this->assertEquals($user->id, $getUser->id);
             $this->assertEquals($user->first_name, $getUser->first_name);
             $this->assertEquals($user->last_name, $getUser->last_name);
@@ -100,10 +99,13 @@ class UserServiceTest extends TestCase
         }
     }
 
+    /**
+     * Test get a user with email.
+     * 
+     * @Test
+     */
     public function test_get_user_with_email()
     {
-        $userService = new UserService();
-
         $users = factory(User::class, 5)->create();
 
         foreach( $users as $user ){
@@ -118,7 +120,8 @@ class UserServiceTest extends TestCase
                 'updated_at' => $user->updated_at
             ]);
 
-            $getUser = $userService->getUserWithEmail($user->email);
+            $getUser = $this->userService->getUserWithEmail($user->email);
+
             $this->assertEquals($user->id, $getUser->id);
             $this->assertEquals($user->first_name, $getUser->first_name);
             $this->assertEquals($user->last_name, $getUser->last_name);
@@ -130,14 +133,17 @@ class UserServiceTest extends TestCase
         }
     }
 
+    /**
+     * Test get users except.
+     * 
+     * @Test
+     */
     public function test_get_users_except()
     {
-        $userService = new UserService();
-
         $user = factory(User::class, 1)->create()->first();
         $users = factory(User::class, 5)->create();
 
-        $getUsers = $userService->getUsersExcept($user->id);
+        $getUsers = $this->userService->getUsersExcept($user->id);
 
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
@@ -178,6 +184,85 @@ class UserServiceTest extends TestCase
             $this->assertFalse($user->username == $getUsers[$i]->username);
             $this->assertFalse($user->password == $getUsers[$i]->password);
             $this->assertFalse($user->created_at == $getUsers[$i]->created_at);
+        }
+    }
+
+    /**
+     * Test exists user.
+     * 
+     * @Test
+     */
+
+    public function test_exists_user()
+    {
+        $users = factory(User::class, 5)->make();
+
+        foreach( $users as $user ){
+            $this->assertDatabaseMissing('users', [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'username' => $user->username,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]);
+
+            $exists = $this->userService->existsUser($user->id);
+            $this->assertFalse($exists);
+
+            $user->save();
+            
+            $this->assertDatabaseHas('users', [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'username' => $user->username,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]);
+
+            $exists = $this->userService->existsUser($user->id);
+            $this->assertTrue($exists);
+        }
+    }
+
+    /**
+     * Test delete user.
+     * 
+     * @Test
+     */
+    public function test_delete_user()
+    {
+        $users = factory(User::class, 5)->create();
+
+        foreach( $users as $user ){
+            $this->assertDatabaseHas('users', [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'username' => $user->username,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]);
+
+            $this->userService->deleteUser($user);
+            
+            $this->assertDatabaseMissing('users', [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'username' => $user->username,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]);
         }
     }
 }
