@@ -3,17 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\User;
+use App\Contracts\UserContract;
 use App\UserRole;
 use Validator;
 use Mail;
 
 class UserRolesController extends Controller
 {
+    protected $userService = null;
+
+    public function __construct(UserContract $userService){
+        $this->userService = $userService;
+    }
+    
     public function users( $id ) {
-        $user = User::where('id', $id)->first();
+        $user = $this->userService->getUser($id);
         if( $user->role == 1 ){
-            $users = User::where('id', '!=', $id)->get();
+            $users = $this->userService->getUsersExcept($id);
             return response()->json([
                 'users' => $users
             ], 201);
@@ -25,7 +31,7 @@ class UserRolesController extends Controller
     }
 
     public function edit( Request $request, $id ) {
-        $user = User::where('id', $id)->first();
+        $user = $this->userService->getUser($id);
 
         if( $user && $user->role == 1 ){
             $errors = Validator::make($request->all(), [
@@ -76,7 +82,7 @@ class UserRolesController extends Controller
     }
 
     public function delete( Request $request, $id ){
-        $user = User::where('id', $id)->first();
+        $user = $this->userService->getUser($id);
 
         if( $user && $user->role == 1 ){
             $errors = Validator::make($request->all(), [
@@ -85,9 +91,10 @@ class UserRolesController extends Controller
 
             if( count($errors) == 0 ){
                 if( $request->input('user_id') != $id ){
-                    $user2 = User::where('id', $request->input('user_id'))->first();
+                    $user2 = $this->userService->getUser($request->input('user_id'));
+
                     if( $user2 ){
-                        $user2->delete();
+                        $this->userService->deleteUser($user2);
 
                         Mail::send('emails.deletion', ['user' => $user2], function ($mail) use ($user2) {
                             $mail->from('info@meatlabs.com', 'MEAT Labs');
@@ -96,7 +103,7 @@ class UserRolesController extends Controller
                         });
                 
                         return response()->json([
-                            'message' => 'User with id of '. $user2->user_id . 'has successfully been deleted'
+                            'message' => 'User with id of '. $user2->id . ' has successfully been deleted'
                         ], 201);
                     } else {
                         return response()->json([

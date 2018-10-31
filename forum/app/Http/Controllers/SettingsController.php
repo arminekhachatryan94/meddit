@@ -3,14 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\User;
+use App\Contracts\UserContract;
 use App\Biography;
 use Validator;
 
 class SettingsController extends Controller
 {
+    protected $userService = null;
+
+    public function __construct(UserContract $userService){
+        $this->userService = $userService;
+    }
+
     public function settings( $id ) {
-        $user = User::where('id', $id)->first();
+        $user = $this->userService->getUser($id);
         if( $user ){
             return response()->json([
                 'user' => $user
@@ -36,7 +42,7 @@ class SettingsController extends Controller
                 'password' => $request->input('password')
             ];
             if( auth()->attempt( $req ) ){
-                $user = User::where('id', $id)->first();
+                $user = $this->userService->getUser($id);
                 $user->username = $request->input('username');
                 $user->save();
                 return response()->json([
