@@ -86,10 +86,10 @@ class CommentsController extends Controller
         $errors = $this->validator($req)->errors();
 
         if( count($errors) == 0 ){
-            $comment = Comment::where('id', $id)->exists();
+            $comment = $this->commentService->existsComment($id);
             $user = $this->userService->existsUser($request->input('user_id'));
             if( $comment && $user ){
-                $newcomment = $this->save($req);
+                $newcomment = $this->commentService->createComment($req);
                 $newcomment->user;
                 $newcomment->comments;
                 return response()->json([ 'comment' => $newcomment ], 201);

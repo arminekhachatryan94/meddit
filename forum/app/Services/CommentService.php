@@ -26,5 +26,9 @@ class CommentService implements CommentContract {
             ]);
         }
     }
+
+    public function existsComment($id){
+        return Comment::where('id', $id)->exists();
+    }
 }
 ?>
