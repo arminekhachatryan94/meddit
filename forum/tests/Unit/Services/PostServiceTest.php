@@ -12,9 +12,12 @@ class PostServiceTest extends TestCase
 {
     use DatabaseMigrations;
 
+    protected $postService = null;
+
     public function setUp()
     {
         parent::setUp();
+        $this->postService = new PostService();
     }
 
     /**
@@ -24,8 +27,6 @@ class PostServiceTest extends TestCase
      */
     public function test_create_post()
     {
-        $postService = new PostService();
-
         $user = factory(User::class, 1)->create()->first();
         $posts = factory(Post::class, 10)->make(['user_id' => $user->id]);
 
@@ -50,7 +51,7 @@ class PostServiceTest extends TestCase
                 'updated_at' => $post->updated_at
             ]);
 
-            $postService->createPost($post);
+            $this->postService->createPost($post);
             
             $this->assertDatabaseHas('posts', [
                 'id' => $post->id,
@@ -70,8 +71,6 @@ class PostServiceTest extends TestCase
      */
     public function test_get_post()
     {
-        $postService = new PostService();
-
         $user = (factory(User::class, 1)->create())->first();
         $posts = factory(Post::class, 5)->create(['user_id' => $user->id]);
     
@@ -98,7 +97,7 @@ class PostServiceTest extends TestCase
                 'updated_at' => $post->updated_at
             ]);
 
-            $retrieve = $postService->getPost($post->id);
+            $retrieve = $this->postService->getPost($post->id);
             $this->assertTrue($retrieve->title == $post->title);
             $this->assertTrue($retrieve->body == $post->body);
         }
@@ -111,8 +110,6 @@ class PostServiceTest extends TestCase
      */
     public function test_get_all_posts()
     {
-        $postService = new PostService();
-
         $user = factory(User::class, 1)->create()->first();
         $posts = factory(Post::class, 10)->create(['user_id' => $user->id]);
         $posts = json_decode($posts);
@@ -132,7 +129,7 @@ class PostServiceTest extends TestCase
             'updated_at' => $user->updated_at
         ]);
 
-        $db_posts = $postService->getAllPosts();
+        $db_posts = $this->postService->getAllPosts();
 
         for( $i = 0; $i < count($posts); $i++ ){
             $this->assertDatabaseHas('posts', [
@@ -162,8 +159,6 @@ class PostServiceTest extends TestCase
      */
     public function test_edit_post()
     {
-        $postService = new PostService();
-
         $user = factory(User::class, 1)->create()->first();
         $posts = factory(Post::class, 10)->create(['user_id' => $user->id]);
 
@@ -196,7 +191,7 @@ class PostServiceTest extends TestCase
                 'body' => 'example body'
             ];
             
-            $postService->editPost($post, $req);
+            $this->postService->editPost($post, $req);
 
             $this->assertDatabaseMissing('posts', [
                 'id' => $oldpost->id,
@@ -225,11 +220,52 @@ class PostServiceTest extends TestCase
      */
     public function test_delete_post()
     {
-        $postService = new PostService();
-
         $user = factory(User::class, 1)->create()->first();
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'username' => $user->username,
+            'password' => $user->password,
+            'remember_token' => $user->remember_token,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at
+        ]);
+        
         $posts = factory(Post::class, 10)->create(['user_id' => $user->id]);
 
+        foreach( $posts as $post ){
+            $this->assertDatabaseHas('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+
+            $this->postService->deletePost($post);
+
+            $this->assertDatabaseMissing('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+        }
+    }
+
+    /**
+     * Test exists post.
+     * 
+     * @test
+     */
+    public function test_exists_post()
+    {
+        $user = factory(User::class, 1)->create()->first();
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
             'first_name' => $user->first_name,
@@ -242,7 +278,23 @@ class PostServiceTest extends TestCase
             'updated_at' => $user->updated_at
         ]);
 
-        foreach( $posts as $post ){
+        $posts = factory(Post::class, 10)->make(['user_id' => $user->id]);
+
+        foreach($posts as $post){
+            $this->assertDatabaseMissing('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]);
+
+            $exists = $this->postService->existsPost($post->id);
+            $this->assertFalse($exists);
+
+            $post->save();
+
             $this->assertDatabaseHas('posts', [
                 'id' => $post->id,
                 'user_id' => $post->user_id,
@@ -252,16 +304,8 @@ class PostServiceTest extends TestCase
                 'updated_at' => $post->updated_at
             ]);
 
-            $postService->deletePost($post);
-
-            $this->assertDatabaseMissing('posts', [
-                'id' => $post->id,
-                'user_id' => $post->user_id,
-                'title' => $post->title,
-                'body' => $post->body,
-                'created_at' => $post->created_at,
-                'updated_at' => $post->updated_at
-            ]);
+            $exists = $this->postService->existsPost($post->id);
+            $this->assertTrue($exists);
         }
     }
 }
