@@ -149,6 +149,8 @@ return [
 
         /* post service provider */
         App\Providers\PostServiceProvider::class,
+        /* user service provider */
+        App\Providers\UserServiceProvider::class,
 
         /*
          * Package Service Providers...

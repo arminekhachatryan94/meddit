@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\User;
+use App\Contracts\UserContract;
 
 class LoginController extends Controller
 {
@@ -30,6 +31,8 @@ class LoginController extends Controller
      */
     protected $redirectTo = '/home';
 
+    protected $userService = null;
+
     protected function validator(array $data)
     {
         return Validator::make($data, [
@@ -43,8 +46,9 @@ class LoginController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(UserContract $userService)
     {
+        $this->userService = $userService;
         $this->middleware('guest')->except('logout');
     }
 
@@ -56,10 +60,11 @@ class LoginController extends Controller
                     'errors' => [
                         'invalid' => 'Invalid credentials. Please try again.'
                     ]
-                ], 401);
+                ], 404);
             } else {
+                $user = $this->userService->getUserWithEmail($request->input('email'));
                 return response()->json([
-                    'user' => User::where('email', $request->input('email'))->get()
+                    'user' => $user
                 ], 201);
             }
         } else {

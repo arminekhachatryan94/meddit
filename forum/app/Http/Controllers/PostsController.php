@@ -3,28 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Post;
-use App\User;
-use App\Comment;
-use App\UserRole;
-use Validator;
-
 use App\Contracts\PostContract;
+use App\Contracts\UserContract;
+use App\Post;
+use App\Comment;
+use Validator;
 
 class PostsController extends Controller
 {
-    protected $postRetriever = null;
+    protected $postService = null;
+    protected $userService = null;
 
-    public function __construct(PostContract $postRetriever){
-        $this->postRetriever = $postRetriever;
+    public function __construct(PostContract $postService, UserContract $userService){
+        $this->postService = $postService;
+        $this->userService = $userService;
     }
 
-    protected function save(array $data)
+    protected function validator(array $data)
     {
-        return Post::create([
-            'user_id' => $data['user_id'],
-            'title' => $data['title'],
-            'body' => $data['body']
+        return Validator::make($data, [
+            'user_id' => 'required|max:255',
+            'title' => 'required|string|max:255',
+            'body' => 'required|string|max:255'
         ]);
     }
 
@@ -39,7 +39,7 @@ class PostsController extends Controller
     }
 
     public function posts() {
-        $posts = Post::orderBy('created_at', 'desc')->get();
+        $posts = $this->postService->getAllPosts();
         foreach ( $posts as $post){
             $post->user;
             $post->comments;
@@ -50,17 +50,17 @@ class PostsController extends Controller
 
         return response()->json([
             'posts' => $posts
-        ], 201);
+        ], 200);
     }
 
     public function post($id) {
-        $post = Post::where('id', $id)->first();
+        $post = $this->postService->getPost($id);
         if( !$post ){
             return response()->json([
                 'errors' => [
                     'invalid' => 'Post does not exist'
                 ]
-            ], 401);
+            ], 404);
         } else {
             $post->comments;
             $post->user;
@@ -69,28 +69,40 @@ class PostsController extends Controller
             }
             return response()->json([
                 'post' => $post
-            ], 201);
+            ], 200);
         }
     }
 
     public function create(Request $request) {
         $errors = $this->validator($request->all())->errors();
         if( count($errors) == 0 ){
-            $post = User::where('id', $request->input('user_id'))->exists();
-            if( $post ){
-                $newpost = $this->save($request->all());
-                $newpost->comments;
-                $newpost->user;
-                return response()->json([ 'post' => $newpost ], 201);
+            $user_exists = $this->userService->existsUser($request->input('user_id'));
+            if( $user_exists ){
+                $post = new Post();
+                $post->title = $request->input('title');
+                $post->body = $request->input('body');
+                $post->user_id = $request->input('user_id');
+                $created = $this->postService->createPost($post);
+                if( $created ){
+                    $post->comments;
+                    $post->user;
+                    return response()->json([ 'post' => $post ], 201);
+                } else {
+                    return response()->json([
+                        'errors' => [
+                            'invalid' => 'Unable to create user.'
+                        ]
+                    ], 406);
+                }
             } else {
                 return response()->json([
                     'errors' => [
                         'invalid' => 'User does not exist'
                     ]
-                ], 401);
+                ], 404);
             }
         } else {
-            return response()->json([ 'errors' => $errors ], 401);
+            return response()->json([ 'errors' => $errors ], 400);
         };
     }
 
@@ -101,20 +113,53 @@ class PostsController extends Controller
             'body' => $request->input('body')
         ];
 
-        return $this->postRetriever->editPost($req, $id);
+        $post = $this->postService->getPost($id);
+        if( $post ){	
+            $errors = validator($request->all())->errors();
+            if( count($errors) ) {	
+                return response()->json([	
+                    'errors' => $errors	
+                ], 400);
+            } else {	
+                if( $post->user_id == $request->input('user_id') ){	
+                    $edit = $this->postService->editPost($post, $req);
+                    if( $edit ){
+                        return response()->json(['post' => $post], 202);
+                    } else {
+                        return response()->json(['errors' => ['invalid' => 'Unable to save changes']], 400);
+                    }
+                } else {	
+                    return response()->json(['errors' => ['invalid' => 'You do not have permission to edit this post']], 401);	
+                }	
+            }	
+        } else {	
+            return response()->json([	
+                'errors' => [	
+                    'invalid' => 'Post not found'	
+                ]	
+            ], 404);	
+        }
     }
 
     public function delete(Request $request, $id) {
-        $post = Post::find($id);
+        $post = $this->postService->getPost($id);
 
         if( $post ){
-            $user = User::where('id', $request->input('user_id'))->get();
-            if( ($post->user_id == $request->input('user_id')) || ($user[0]->role == 1) ){
-                $post->delete();
-                return response()->json([
-                    'message' => 'Post was successfully deleted',
-                    'post' => $id
-                ], 201);
+            $user = $this->userService->getUser($request->input('user_id'));
+            if( ($post->user_id == $request->input('user_id')) || ($user->role == 1) ){
+                $deleted = $this->postService->deletePost($post);
+                if( $deleted ){
+                    return response()->json([
+                        'message' => 'Post was successfully deleted',
+                        'post' => $id
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'errors' => [
+                            'invalid' => 'Failed to delete this post'
+                        ]
+                    ], 400);
+                }
             } else {
                 return response()->json([
                     'errors' => [
@@ -127,7 +172,7 @@ class PostsController extends Controller
                 'errors' => [
                     'invalid' => 'Post does not exist'
                 ]
-            ], 401);
+            ], 404);
         }
     }
 }

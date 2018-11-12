@@ -65,8 +65,8 @@ export default {
           self.$session.start()
           // this.$session.flash.set('loggedin', 'Successfully logged in! Enjoy iChat.')
           self.$session.set('auth', true)
-          self.$session.set('user', response.data.user[0])
-          self.$store.commit('login', response.data.user[0])
+          self.$session.set('user', response.data.user)
+          self.$store.commit('login', response.data.user)
           self.$router.push('/posts')
         }).catch(function (error) {
           if (typeof error.response.data.errors.invalid !== 'undefined') {

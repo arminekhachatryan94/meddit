@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Contracts\PostContract;
+use App\Contracts\UserContract;
 use App\Comment;
 use App\Post;
 use App\User;
@@ -10,6 +12,14 @@ use Validator;
 
 class CommentsController extends Controller
 {
+    protected $postService = null;
+    protected $userService = null;
+
+    public function __construct(PostContract $postService, UserContract $userService){
+        $this->postService = $postService;
+        $this->userService = $userService;
+    }
+
     protected function validator(array $data) {
         if( $data['comment_id'] == NULL ) {
             return Validator::make($data, [
@@ -55,8 +65,8 @@ class CommentsController extends Controller
         $errors = $this->validator($req)->errors();
 
         if( count($errors) == 0 ){
-            $post = Post::where('id', $id)->exists();
-            $user = User::where('id', $request->input('user_id'))->exists();
+            $post = $this->postService->existsPost($id);
+            $user = $this->userService->existsUser($request->input('user_id'));
             if( $post && $user ){
                 $comment = $this->save($req);
                 $comment->user;
@@ -92,7 +102,7 @@ class CommentsController extends Controller
 
         if( count($errors) == 0 ){
             $comment = Comment::where('id', $id)->exists();
-            $user = User::where('id', $request->input('user_id'))->exists();
+            $user = $this->userService->existsUser($request->input('user_id'));
             if( $comment && $user ){
                 $newcomment = $this->save($req);
                 $newcomment->user;
@@ -155,7 +165,7 @@ class CommentsController extends Controller
         $comment2 = Comment::find($comment);
 
         if( $comment2 ){
-            $user = User::where('id', $request->input('user_id'))->first();
+            $user = $this->userService->getUser($request->input('user_id'));
             if( $comment2->user_id == $request->user_id || $user->role == 1 ){
                 $comment2->delete();
                 return response()->json([

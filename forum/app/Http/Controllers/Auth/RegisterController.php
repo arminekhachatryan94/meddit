@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\User;
 use App\Biography;
 use App\UserRole;
+use App\Contracts\UserContract;
+
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
@@ -35,12 +36,19 @@ class RegisterController extends Controller
     protected $redirectTo = '/home';
 
     /**
+     * User Service
+     */
+
+    protected $userService = null;
+
+    /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(UserContract $userService)
     {
+        $this->userService = $userService;
         $this->middleware('guest');
     }
 
@@ -69,13 +77,7 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        $user = User::create([
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
-            'username' => $data['username'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        $user = $this->userService->createUser($data);
 
         $biography = Biography::create([
             'user_id' => $user->id,
