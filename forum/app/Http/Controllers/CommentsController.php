@@ -121,7 +121,7 @@ class CommentsController extends Controller
                     ['body' => 'required|string|max:255'])->errors();
                 if( count($errors) == 0 ){
                     $comment2->body = $request->input('body');
-                    $comment2->save();
+                    $this->commentService->editComment($comment2);
                     return response()->json([
                         'comment' => $comment2
                     ], 201);

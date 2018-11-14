@@ -31,6 +31,10 @@ class CommentService implements CommentContract {
         }
     }
 
+    public function editComment(Comment $comment){
+        return $comment->save();
+    }
+
     public function deleteComment(Comment $comment){
         return $comment->delete();
     }
