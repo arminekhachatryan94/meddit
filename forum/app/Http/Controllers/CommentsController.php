@@ -152,7 +152,7 @@ class CommentsController extends Controller
         if( $comment2 ){
             $user = $this->userService->getUser($request->input('user_id'));
             if( $comment2->user_id == $request->user_id || $user->role == 1 ){
-                $comment2->delete();
+                $this->commentService->deleteComment($comment2);
                 return response()->json([
                     'comment' => 'Comment was successfully deleted'
                 ], 201);

@@ -31,6 +31,10 @@ class CommentService implements CommentContract {
         }
     }
 
+    public function deleteComment(Comment $comment){
+        return $comment->delete();
+    }
+
     public function existsComment($id){
         return Comment::where('id', $id)->exists();
     }
