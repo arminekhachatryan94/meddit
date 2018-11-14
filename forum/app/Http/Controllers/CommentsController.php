@@ -112,7 +112,7 @@ class CommentsController extends Controller
     }
 
     public function edit(Request $request, $comment) {
-        $comment2 = Comment::find($comment);
+        $comment2 = $this->commentService->getComment($comment);
 
         if( $comment2 ) {
             if( $comment2->user_id == $request->input('user_id') ){
@@ -147,7 +147,7 @@ class CommentsController extends Controller
     }
 
     public function delete(Request $request, $comment) {
-        $comment2 = Comment::find($comment);
+        $comment2 = $this->commentService->getComment($comment);
 
         if( $comment2 ){
             $user = $this->userService->getUser($request->input('user_id'));

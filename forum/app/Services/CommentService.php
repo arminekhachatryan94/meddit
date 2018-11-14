@@ -8,6 +8,10 @@ use Validator;
 
 class CommentService implements CommentContract {
 
+    public function getComment($id){
+        return Comment::where('id', $id)->first();
+    }
+
     public function createComment(Array $data){
         if( $data['comment_id'] == NULL ){
             return Comment::create([
