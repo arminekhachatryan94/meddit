@@ -153,6 +153,8 @@ return [
         App\Providers\UserServiceProvider::class,
         /* comment service provider */
         App\Providers\CommentServiceProvider::class,
+        /* biography service provider */
+        App\Providers\BiographyServiceProvider::class,
 
         /*
          * Package Service Providers...
