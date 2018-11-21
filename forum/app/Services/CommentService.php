@@ -8,11 +8,11 @@ use Validator;
 
 class CommentService implements CommentContract {
 
-    public function getComment($id){
+    public function getComment(int $id): Comment {
         return Comment::where('id', $id)->first();
     }
 
-    public function createComment(Array $data){
+    public function createComment(Array $data): Comment {
         if( $data['comment_id'] == NULL ){
             return Comment::create([
                 'post_id' => $data['post_id'],
@@ -31,15 +31,16 @@ class CommentService implements CommentContract {
         }
     }
 
-    public function editComment(Comment $comment){
+    public function editComment(Comment $comment, string $body): bool {
+        $comment->body = $body;
         return $comment->save();
     }
 
-    public function deleteComment(Comment $comment){
+    public function deleteComment(Comment $comment): bool {
         return $comment->delete();
     }
 
-    public function existsComment($id){
+    public function existsComment(int $id): bool {
         return Comment::where('id', $id)->exists();
     }
 }
