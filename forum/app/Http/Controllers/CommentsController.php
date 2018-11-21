@@ -112,7 +112,7 @@ class CommentsController extends Controller
     }
 
     public function edit(Request $request, $comment) {
-        $comment2 = Comment::find($comment);
+        $comment2 = $this->commentService->getComment($comment);
 
         if( $comment2 ) {
             if( $comment2->user_id == $request->input('user_id') ){
@@ -121,7 +121,7 @@ class CommentsController extends Controller
                     ['body' => 'required|string|max:255'])->errors();
                 if( count($errors) == 0 ){
                     $comment2->body = $request->input('body');
-                    $comment2->save();
+                    $this->commentService->editComment($comment2);
                     return response()->json([
                         'comment' => $comment2
                     ], 201);
@@ -147,12 +147,12 @@ class CommentsController extends Controller
     }
 
     public function delete(Request $request, $comment) {
-        $comment2 = Comment::find($comment);
+        $comment2 = $this->commentService->getComment($comment);
 
         if( $comment2 ){
             $user = $this->userService->getUser($request->input('user_id'));
             if( $comment2->user_id == $request->user_id || $user->role == 1 ){
-                $comment2->delete();
+                $this->commentService->deleteComment($comment2);
                 return response()->json([
                     'comment' => 'Comment was successfully deleted'
                 ], 201);

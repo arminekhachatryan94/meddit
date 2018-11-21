@@ -8,6 +8,10 @@ use Validator;
 
 class CommentService implements CommentContract {
 
+    public function getComment($id){
+        return Comment::where('id', $id)->first();
+    }
+
     public function createComment(Array $data){
         if( $data['comment_id'] == NULL ){
             return Comment::create([
@@ -25,6 +29,14 @@ class CommentService implements CommentContract {
                 'body' => $data['body']
             ]);
         }
+    }
+
+    public function editComment(Comment $comment){
+        return $comment->save();
+    }
+
+    public function deleteComment(Comment $comment){
+        return $comment->delete();
     }
 
     public function existsComment($id){
