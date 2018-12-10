@@ -75,7 +75,7 @@ class CommentsController extends Controller
         };
     }
 
-    public function commentOnComment(Request $request, $id) {
+    public function commentOnComment(Request $request, int $id) {
         $req = [
             'post_id' => NULL,
             'comment_id' => $id,
@@ -111,8 +111,8 @@ class CommentsController extends Controller
         };
     }
 
-    public function edit(Request $request, $comment) {
-        $comment2 = $this->commentService->getComment($comment);
+    public function edit(Request $request, int $id) {
+        $comment2 = $this->commentService->getComment($id);
 
         if( $comment2 ) {
             if( $comment2->user_id == $request->input('user_id') ){
@@ -120,8 +120,7 @@ class CommentsController extends Controller
                     ['body' => $request->input('body')],
                     ['body' => 'required|string|max:255'])->errors();
                 if( count($errors) == 0 ){
-                    $comment2->body = $request->input('body');
-                    $this->commentService->editComment($comment2);
+                    $this->commentService->editComment($comment2, $request->input('body'));
                     return response()->json([
                         'comment' => $comment2
                     ], 201);
@@ -146,8 +145,8 @@ class CommentsController extends Controller
         }
     }
 
-    public function delete(Request $request, $comment) {
-        $comment2 = $this->commentService->getComment($comment);
+    public function delete(Request $request, int $id) {
+        $comment2 = $this->commentService->getComment($id);
 
         if( $comment2 ){
             $user = $this->userService->getUser($request->input('user_id'));

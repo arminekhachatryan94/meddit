@@ -4,15 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Contracts\UserContract;
-use App\Biography;
+use App\Contracts\BiographyContract;
 use Validator;
 
 class SettingsController extends Controller
 {
     protected $userService = null;
+    protected $biographyService = null;
 
-    public function __construct(UserContract $userService){
+    public function __construct(UserContract $userService, BiographyContract $biographyService){
         $this->userService = $userService;
+        $this->biographyService = $biographyService;
     }
 
     public function settings( $id ) {
@@ -73,9 +75,8 @@ class SettingsController extends Controller
                 'password' => $request->input('password')
             ];
             if( auth()->attempt( $req ) ){
-                $user = Biography::where('user_id', $id)->first();
-                $user->description = $request->input('biography');
-                $user->save();
+                $bio = $this->biographyService->getBiography($id);
+                $this->biographyService->saveBiography($bio, $request->input('biography'));
                 return response()->json([
                     'message' => 'Successfully updated biography'
                 ], 201);
