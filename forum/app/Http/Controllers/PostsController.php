@@ -78,12 +78,8 @@ class PostsController extends Controller
         if( count($errors) == 0 ){
             $user_exists = $this->userService->existsUser($request->input('user_id'));
             if( $user_exists ){
-                $post = new Post();
-                $post->title = $request->input('title');
-                $post->body = $request->input('body');
-                $post->user_id = $request->input('user_id');
-                $created = $this->postService->createPost($post);
-                if( $created ){
+                $post = $this->postService->createPost($request->all());
+                if( $post ){
                     $post->comments;
                     $post->user;
                     return response()->json([ 'post' => $post ], 201);

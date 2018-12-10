@@ -121,7 +121,7 @@ class CommentServiceTest extends TestCase
                     'updated_at' => $comment->updated_at
                 ]);
 
-                $this->commentService->createComment(array(
+                $temp = $this->commentService->createComment(array(
                     'id' => $comment->id,
                     'user_id' => $comment->user_id,
                     'post_id' => $comment->post_id,
@@ -131,14 +131,18 @@ class CommentServiceTest extends TestCase
                     'updated_at' => $comment->updated_at
                 ));
 
+                $comment->id = $temp->id;
+                $comment->created_at = $temp->created_at;
+                $comment->updated_at = $temp->updated_at;
+
                 $this->assertDatabaseHas('comments', [
-                    // 'id' => $comment->id,
+                    'id' => $comment->id,
                     'user_id' => $comment->user_id,
                     'post_id' => $comment->post_id,
                     'comment_id' => $comment->comment_id,
                     'body' => $comment->body,
-                    // 'created_at' => $comment->created_at,
-                    // 'updated_at' => $comment->updated_at
+                    'created_at' => $comment->created_at,
+                    'updated_at' => $comment->updated_at
                 ]);
             }
         }

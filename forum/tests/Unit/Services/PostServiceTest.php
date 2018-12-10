@@ -51,8 +51,18 @@ class PostServiceTest extends TestCase
                 'updated_at' => $post->updated_at
             ]);
 
-            $this->postService->createPost($post);
-            
+            $temp = $this->postService->createPost(array(
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ));
+
+            $post->id = $temp->id;
+            $post->created_at = $temp->created_at;
+            $post->updated_at = $temp->updated_at;
+
             $this->assertDatabaseHas('posts', [
                 'id' => $post->id,
                 'user_id' => $post->user_id,
