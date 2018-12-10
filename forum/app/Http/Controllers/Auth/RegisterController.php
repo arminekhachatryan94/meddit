@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
-use App\Biography;
-use App\UserRole;
+use App\Contracts\BiographyContract;
 use App\Contracts\UserContract;
+use App\Contracts\UserRoleContract;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -40,15 +39,21 @@ class RegisterController extends Controller
      */
 
     protected $userService = null;
+    protected $userRoleService = null;
+    protected $biographyService = null;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(UserContract $userService)
-    {
+    public function __construct(UserContract $userService,
+        UserRoleContract $userRoleService,
+        BiographyContract $biographyService
+    ) {
         $this->userService = $userService;
+        $this->userRoleService = $userRoleService;
+        $this->biographyService = $biographyService;
         $this->middleware('guest');
     }
 
@@ -79,15 +84,9 @@ class RegisterController extends Controller
     {
         $user = $this->userService->createUser($data);
 
-        $biography = Biography::create([
-            'user_id' => $user->id,
-            'description' => ''
-        ]);
+        $biography = $this->biographyService->createBiography($user->id);
 
-        $role = UserRole::create([
-            'user_id' => $user->id,
-            'role' => 0
-        ]);
+        $role = $this->userRoleService->createUserRole($user->id);
 
         Mail::send('emails.registration', ['user' => $user], function ($mail) use ($user) {
             $mail->from('info@meatlabs.com', 'MEAT Labs');
