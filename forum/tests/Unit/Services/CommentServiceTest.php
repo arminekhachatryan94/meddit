@@ -189,9 +189,7 @@ class CommentServiceTest extends TestCase
                     'body' => 'example body'
                 ];
 
-                $comment->body = $req['body'];
-
-                $this->commentService->editComment($comment);
+                $this->commentService->editComment($comment, $req['body']);
 
                 $this->assertDatabaseHas('comments', [
                     'id' => $comment->id,
