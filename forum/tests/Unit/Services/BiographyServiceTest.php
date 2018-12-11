@@ -41,15 +41,16 @@ class BiographyServiceTest extends TestCase
                 'updated_at' => $user->updated_at
             ]);
 
-            $biography = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+            $biography = $this->biographyService->createBiography($user->id);
 
             $this->assertDatabaseHas('biographies', [
                 'id' => $biography->id,
-                'user_id' => $biography->user_id,
-                'description' => $biography->description,
+                'user_id' => $user->id,
+                'description' => '',
                 'created_at' => $biography->created_at,
                 'updated_at' => $biography->updated_at
             ]);
+
         }
     }
 }
