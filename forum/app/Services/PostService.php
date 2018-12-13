@@ -18,7 +18,7 @@ class PostService implements PostContract {
     }
 
     public function getPost($id): Post {
-        return Post::find($id);
+        return Post::where('id', $id)->firstOrFail();
     }
 
     public function getAllPosts(): Collection {

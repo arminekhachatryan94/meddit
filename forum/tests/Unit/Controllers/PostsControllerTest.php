@@ -111,6 +111,7 @@ class PostControllerTest extends TestCase
 
         $factory_posts = factory(Post::class, 10)->create(['user_id' => $user->id]);
 
+        // posts exist
         foreach($factory_posts as $factory_post) {
             $this->assertDatabaseHas('posts', [
                 'id' => $factory_post->id,
@@ -132,6 +133,18 @@ class PostControllerTest extends TestCase
             $this->assertEquals($factory_post->body, $post->body);
             $this->assertEquals($factory_post->created_at, $post->created_at);
             $this->assertEquals($factory_post->updated_at, $post->updated_at);
+        }
+
+        // posts don't exist
+        for($i = 11; $i <= 20; $i++) {
+            $response = $this->call('GET', '/api/posts/' . $i);
+            $response->assertStatus(404);
+            $errors = json_decode($response->content());
+            $response->assertJson([
+                'errors' => [
+                    'invalid' => "Post does not exist"
+                ]
+            ]);
         }
     }
 }

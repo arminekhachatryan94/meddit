@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Contracts\PostContract;
 use App\Contracts\UserContract;
 use App\Post;
@@ -54,14 +55,9 @@ class PostsController extends Controller
     }
 
     public function post($id) {
-        $post = $this->postService->getPost($id);
-        if( !$post ){
-            return response()->json([
-                'errors' => [
-                    'invalid' => 'Post does not exist'
-                ]
-            ], 404);
-        } else {
+        try {
+            $post = $this->postService->getPost($id);
+            
             $post->comments;
             $post->user;
             foreach ($post->comments as $comment ){
@@ -70,6 +66,12 @@ class PostsController extends Controller
             return response()->json([
                 'post' => $post
             ], 200);
+        } catch(ModelNotFoundException $e) {
+            return response()->json([
+                'errors' => [
+                    'invalid' => 'Post does not exist'
+                ]
+            ], 404);
         }
     }
 
