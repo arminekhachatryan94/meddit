@@ -46,8 +46,7 @@ class UserRolesController extends Controller
                 if( $request->input('user_id') != $id ){
                     $user_role = $this->userRoleService->getUserRole($request->input('user_id'));
                     if( $user_role ){
-                        $user_role->role = $request->input('role');
-                        $user_role->save();
+                        $this->userRoleService->updateUserRole($user_role, $request->input('role'));
                         return response()->json([
                             'message' => 'User with id of '. $user_role->user_id . ' is now ' . ($user_role->role == 1 ? 'an admin' : 'a user')
                         ], 201);
