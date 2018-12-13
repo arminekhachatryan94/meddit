@@ -6,6 +6,7 @@ use Tests\TestCase;
 use Illuminate\Support\Carbon;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Http\Request;
+use Faker;
 use App\Http\Controllers\PostsController;
 use App\Contracts\PostContract;
 use App\Contracts\UserContract;
@@ -22,6 +23,7 @@ class PostControllerTest extends TestCase
     protected $postService = null;
     protected $userService = null;
     protected $postsController = null;
+    protected $faker = null;
 
     public function setUp()
     {
@@ -29,6 +31,7 @@ class PostControllerTest extends TestCase
         $this->postService = Mockery::spy(PostContract::class);
         $this->userService = Mockery::spy(UserContract::class);
         $this->postsController = new PostsController($this->postService, $this->userService);
+        $this->faker = Faker\Factory::create();
     }
 
     /**
@@ -88,11 +91,11 @@ class PostControllerTest extends TestCase
     }
 
     /**
-     * Test get one post.
+     * Test get one post if posts exist.
      *
      * @test
      */
-    public function test_get_one_post()
+    public function test_get_one_post_if_posts_exist()
     {
         $user = factory(User::class, 1)->create()->first();
         $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
@@ -111,7 +114,6 @@ class PostControllerTest extends TestCase
 
         $factory_posts = factory(Post::class, 10)->create(['user_id' => $user->id]);
 
-        // posts exist
         foreach($factory_posts as $factory_post) {
             $this->assertDatabaseHas('posts', [
                 'id' => $factory_post->id,
@@ -134,8 +136,29 @@ class PostControllerTest extends TestCase
             $this->assertEquals($factory_post->created_at, $post->created_at);
             $this->assertEquals($factory_post->updated_at, $post->updated_at);
         }
+    }
 
-        // posts don't exist
+    /**
+     * Test get one post if posts exist.
+     *
+     * @test
+     */
+    public function test_get_one_post_if_posts_do_not_exist() {
+        $user = factory(User::class, 1)->create()->first();
+        $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+        $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'username' => $user->username,
+            'password' => $user->password,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at
+        ]);
+
         for($i = 11; $i <= 20; $i++) {
             $response = $this->call('GET', '/api/posts/' . $i);
             $response->assertStatus(404);
@@ -144,6 +167,46 @@ class PostControllerTest extends TestCase
                 'errors' => [
                     'invalid' => "Post does not exist"
                 ]
+            ]);
+        }
+    }
+
+    /**
+     * Test create post successfully.
+     *
+     * @test
+     */
+    public function test_create_post_successfully()
+    {
+        $user = factory(User::class, 1)->create()->first();
+        $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+        $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+
+        for($i = 0; $i < 20; $i++) {
+            $post = factory(Post::class, 1)->make(['user_id' => $user->id])->first();
+            $title = $this->faker->sentence;
+            $body = $this->faker->sentence;
+
+            $this->assertDatabaseMissing('posts', [
+                'user_id' => $user->id,
+                'title' => $title,
+                'body' => $body,
+            ]);
+            $response = $this->json('POST', '/api/new-post', [
+                'user_id' => $user->id,
+                'title' => $title,
+                'body' => $body
+            ]);
+            $response->assertStatus(201);
+            $new_post = json_decode($response->content())->post;
+
+            $this->assertDatabaseHas('posts', [
+                'id' => $new_post->id,
+                'user_id' => $user->id,
+                'title' => $title,
+                'body' => $body,
+                'created_at' => $new_post->created_at,
+                'updated_at' => $new_post->updated_at
             ]);
         }
     }
