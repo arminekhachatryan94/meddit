@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
+use Illuminate\Support\Carbon;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Http\Request;
 use App\Http\Controllers\PostsController;
@@ -30,6 +31,16 @@ class PostControllerTest extends TestCase
         $this->postsController = new PostsController($this->postService, $this->userService);
     }
 
+    function compareByCreatedAt($post1, $post2) { 
+        if (strtotime($post1->created_at) < strtotime($post2->created_at)) 
+            return 1; 
+        else if (strtotime($post1->created_at) > strtotime($post2->created_at))  
+            return -1; 
+        else
+            return 0; 
+    } 
+
+
     /**
      * Test get all posts.
      *
@@ -52,7 +63,12 @@ class PostControllerTest extends TestCase
             'updated_at' => $user->updated_at
         ]);
 
-        $factory_posts = factory(Post::class, 1)->create(['user_id' => $user->id]);
+        $factory_posts = factory(Post::class, 10)->create(['user_id' => $user->id]);
+        $factory_posts = json_decode($factory_posts);
+        usort($factory_posts, function($a, $b) {
+            return strtotime($a->created_at) < strtotime($b->created_at);
+        });
+
         foreach($factory_posts as $post) {
             $this->assertDatabaseHas('posts', [
                 'id' => $post->id,
@@ -65,6 +81,17 @@ class PostControllerTest extends TestCase
         }
 
         $response = $this->call('GET', '/api/posts');
-        $response->assertStatus(200);
+        $posts = json_decode($response->content())->posts;
+
+        $this->assertEquals(count($factory_posts), count($posts));
+
+        for($i = 0; $i < count($posts); $i++) {
+            $this->assertEquals($factory_posts[$i]->id, $posts[$i]->id);
+            $this->assertEquals($factory_posts[$i]->user_id, $posts[$i]->user_id);
+            $this->assertEquals($factory_posts[$i]->title, $posts[$i]->title);
+            $this->assertEquals($factory_posts[$i]->body, $posts[$i]->body);
+            $this->assertEquals($factory_posts[$i]->created_at, $posts[$i]->created_at);
+            $this->assertEquals($factory_posts[$i]->updated_at, $posts[$i]->updated_at);
+        }
     }
 }
