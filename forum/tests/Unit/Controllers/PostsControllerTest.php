@@ -31,16 +31,6 @@ class PostControllerTest extends TestCase
         $this->postsController = new PostsController($this->postService, $this->userService);
     }
 
-    function compareByCreatedAt($post1, $post2) { 
-        if (strtotime($post1->created_at) < strtotime($post2->created_at)) 
-            return 1; 
-        else if (strtotime($post1->created_at) > strtotime($post2->created_at))  
-            return -1; 
-        else
-            return 0; 
-    } 
-
-
     /**
      * Test get all posts.
      *
@@ -81,6 +71,8 @@ class PostControllerTest extends TestCase
         }
 
         $response = $this->call('GET', '/api/posts');
+        $response->assertStatus(200);
+
         $posts = json_decode($response->content())->posts;
 
         $this->assertEquals(count($factory_posts), count($posts));
@@ -92,6 +84,54 @@ class PostControllerTest extends TestCase
             $this->assertEquals($factory_posts[$i]->body, $posts[$i]->body);
             $this->assertEquals($factory_posts[$i]->created_at, $posts[$i]->created_at);
             $this->assertEquals($factory_posts[$i]->updated_at, $posts[$i]->updated_at);
+        }
+    }
+
+    /**
+     * Test get one post.
+     *
+     * @test
+     */
+    public function test_get_one_post()
+    {
+        $user = factory(User::class, 1)->create()->first();
+        $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+        $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'username' => $user->username,
+            'password' => $user->password,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at
+        ]);
+
+        $factory_posts = factory(Post::class, 10)->create(['user_id' => $user->id]);
+
+        foreach($factory_posts as $factory_post) {
+            $this->assertDatabaseHas('posts', [
+                'id' => $factory_post->id,
+                'user_id' => $factory_post->user_id,
+                'title' => $factory_post->title,
+                'body' => $factory_post->body,
+                'created_at' => $factory_post->created_at,
+                'updated_at' => $factory_post->updated_at
+            ]);
+
+            $response = $this->call('GET', '/api/posts/' . $factory_post->id);
+            $response->assertStatus(200);
+
+            $post = json_decode($response->content())->post;
+        
+            $this->assertEquals($factory_post->id, $post->id);
+            $this->assertEquals($factory_post->user_id, $post->user_id);
+            $this->assertEquals($factory_post->title, $post->title);
+            $this->assertEquals($factory_post->body, $post->body);
+            $this->assertEquals($factory_post->created_at, $post->created_at);
+            $this->assertEquals($factory_post->updated_at, $post->updated_at);
         }
     }
 }
