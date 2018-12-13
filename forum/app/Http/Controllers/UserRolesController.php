@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Contracts\UserContract;
+use App\Contracts\UserRoleContract;
 use App\UserRole;
 use Validator;
 use Mail;
@@ -11,9 +12,11 @@ use Mail;
 class UserRolesController extends Controller
 {
     protected $userService = null;
+    protected $userRoleService = null;
 
-    public function __construct(UserContract $userService){
+    public function __construct(UserContract $userService, UserRoleContract $userRoleService){
         $this->userService = $userService;
+        $this->userRoleService = $userRoleService;
     }
     
     public function users( $id ) {
@@ -41,7 +44,7 @@ class UserRolesController extends Controller
 
             if( count($errors) == 0 && ($request->input('role') == 1 || $request->input('role') == 0) ){
                 if( $request->input('user_id') != $id ){
-                    $user_role = UserRole::where('id', $request->input('user_id'))->first();
+                    $user_role = $this->userRoleService->getUserRole($request->input('user_id'));
                     if( $user_role ){
                         $user_role->role = $request->input('role');
                         $user_role->save();

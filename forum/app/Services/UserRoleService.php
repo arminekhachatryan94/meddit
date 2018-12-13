@@ -11,5 +11,9 @@ class UserRoleService implements UserRoleContract {
             'role' => 0
         ]);
     }
+
+    public function getUserRole(int $id): UserRole {
+        return UserRole::where('id', $id)->first();
+    }
 }
 ?>
