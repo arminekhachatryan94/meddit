@@ -94,4 +94,49 @@ class UserRoleServiceTest extends TestCase
             $this->assertEquals($role->updated_at, $userrole->updated_at);
         }
     }
+
+    /**
+     * Test update user role
+     * 
+     * @test
+     */
+    public function test_update_user_role()
+    {
+        for( $i = 0; $i < 10; $i++ ){
+            $user = factory(User::class, 1)->create()->first();
+
+            $this->assertDatabaseHas('users', [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'username' => $user->username,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]);
+
+            $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+
+            $this->assertDatabaseHas('user_roles', [
+                'id' => $role->id,
+                'user_id' => $role->user_id,
+                'role' => $role->role,
+                'created_at' => $role->created_at,
+                'updated_at' => $role->updated_at
+            ]);
+
+            $rand_role = rand(0, 10)%2;
+            $userrole = $this->userRoleService->updateUserRole($role, $rand_role);
+
+            $this->assertTrue($userrole);
+            $this->assertDatabaseHas('user_roles', [
+                'id' => $role->id,
+                'user_id' => $role->user_id,
+                'role' => $rand_role,
+                'created_at' => $role->created_at,
+                'updated_at' => $role->updated_at
+            ]);
+        }
+    }
 }
