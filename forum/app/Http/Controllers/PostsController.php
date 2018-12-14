@@ -113,7 +113,7 @@ class PostsController extends Controller
 
         try {
             $post = $this->postService->getPost($id);
-            $errors = validator($request->all())->errors();
+            $errors = $this->validator($request->all())->errors();
             if( count($errors) ) {	
                 return response()->json([	
                     'errors' => $errors	
