@@ -276,4 +276,34 @@ class PostControllerTest extends TestCase
             }
         }
     }
+
+    /**
+     * Test create post with invalid user id.
+     *
+     * @test
+     */
+    public function test_create_post_with_invalid_user_id()
+    {
+        for($i = 0; $i < 20; $i++) {
+            $user_id = rand(1, 50);
+            $title = $this->faker->sentence;
+            $body = $this->faker->sentence;
+            
+            $this->assertDatabaseMissing('posts', [
+                'user_id' => $user_id,
+                'title' => $title,
+                'body' => $body,
+            ]);
+
+            $response = $this->json('POST', '/api/new-post', [
+                'user_id' => $user_id,
+                'title' => $title,
+                'body' => $body
+            ]);
+
+            $response->assertStatus(404);
+            $errors = json_decode($response->content())->errors;
+            $this->assertEquals($errors->invalid, "User does not exist");
+        }
+    }
 }
