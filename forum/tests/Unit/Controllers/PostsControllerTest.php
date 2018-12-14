@@ -210,4 +210,70 @@ class PostControllerTest extends TestCase
             ]);
         }
     }
+
+
+    /**
+     * Test create post with errors in request.
+     *
+     * @test
+     */
+    public function test_create_post_with_errors_in_request()
+    {
+        $user = factory(User::class, 1)->create()->first();
+        $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+        $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+
+        for($i = 0; $i < 20; $i++) {
+            $userid_rand = rand(0, 1);
+            $title_rand = rand(0, 1);
+            $body_rand = rand(0, 1);
+
+            $user_id = "";
+            $title = "";
+            $body = "";
+
+            if($userid_rand) {
+                $user_id = $user->id;
+            }
+
+            if($title_rand) {
+                $title = $this->faker->sentence;
+            }
+
+            if($body_rand) {
+                $body = $this->faker->sentence;
+            }
+            
+            $this->assertDatabaseMissing('posts', [
+                'user_id' => $user_id,
+                'title' => $title,
+                'body' => $body,
+            ]);
+
+            $response = $this->json('POST', '/api/new-post', [
+                'user_id' => $user_id,
+                'title' => $title,
+                'body' => $body
+            ]);
+
+            if($userid_rand && $title_rand && $body_rand) {
+                $response->assertStatus(201);
+            } else {
+                $response->assertStatus(400);
+                $errors = json_decode($response->content())->errors;
+                if(!$userid_rand) {
+                    $userid_error = $errors->user_id[0];
+                    $this->assertEquals($userid_error, 'The user id field is required.');
+                }
+                if(!$title_rand) {
+                    $title_error = $errors->title[0];
+                    $this->assertEquals($title_error, 'The title field is required.');
+                }
+                if(!$body_rand) {
+                    $body_error = $errors->body[0];
+                    $this->assertEquals($body_error, 'The body field is required.');
+                }
+            }
+        }
+    }
 }
