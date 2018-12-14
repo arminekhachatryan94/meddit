@@ -306,4 +306,21 @@ class PostControllerTest extends TestCase
             $this->assertEquals($errors->invalid, "User does not exist");
         }
     }
+
+    /**
+     * Test edit post with invalid post id
+     * 
+     * @test
+     */
+    public function test_edit_post_with_invalid_post_id()
+    {
+        for($i = 0; $i < 20; $i++) {
+            $id = rand(1, 50);
+            $response = $this->json('PUT', '/api/posts/' . $id);
+            $response->assertStatus(404);
+            $errors = json_decode($response->content())->errors;
+            $this->assertEquals($errors->invalid, "Post not found");
+        }
+    }
+
 }

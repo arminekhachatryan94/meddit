@@ -111,8 +111,8 @@ class PostsController extends Controller
             'body' => $request->input('body')
         ];
 
-        $post = $this->postService->getPost($id);
-        if( $post ){	
+        try {
+            $post = $this->postService->getPost($id);
             $errors = validator($request->all())->errors();
             if( count($errors) ) {	
                 return response()->json([	
@@ -130,7 +130,7 @@ class PostsController extends Controller
                     return response()->json(['errors' => ['invalid' => 'You do not have permission to edit this post']], 401);	
                 }	
             }	
-        } else {	
+        } catch(ModelNotFoundException $e) {	
             return response()->json([	
                 'errors' => [	
                     'invalid' => 'Post not found'	
