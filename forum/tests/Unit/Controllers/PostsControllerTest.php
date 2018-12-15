@@ -62,10 +62,13 @@ class PostControllerTest extends TestCase
             $factoryComments = $factory_comment->comments;
             $callComments = $comment->comments;
             usort($factoryComments, function($a, $b) {
-                return strtotime($a->created_at) < strtotime($b->created_at);
+                return strtotime($a->created_at) > strtotime($b->created_at);
             });
             for($c = 0; $c < count($callComments); $c++) {
                 $this->assertComments($factoryComments[$c], $callComments[$c]);
+                if($c > 0){
+                    $this->assertTrue(strtotime($factoryComments[$c-1]->created_at) < strtotime($factoryComments[$c]->created_at));
+                }
             }
         }
     }
