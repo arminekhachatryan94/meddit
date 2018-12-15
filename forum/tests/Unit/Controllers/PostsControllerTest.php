@@ -393,4 +393,57 @@ class PostControllerTest extends TestCase
             }
         }
     }
+
+    /**
+     * Test edit post successfully
+     * 
+     * @test
+     */
+    public function test_edit_post_successfully()
+    {
+        $user = factory(User::class, 1)->create()->first();
+        $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+        $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+
+        for($i = 0; $i < 50; $i++) {
+            $post = factory(Post::class, 1)->create(['user_id' => $user->id])->first();
+
+            $this->assertDatabaseHas('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+
+            $user_id = $user->id;
+            $title = $this->faker->sentence;
+            $body = $this->faker->sentence;
+            
+            $response = $this->json('PUT', '/api/posts/' . $post->id, [
+                'user_id' => $user_id,
+                'title' => $title,
+                'body' => $body
+            ]);
+
+            $response->assertStatus(202);
+
+            $new_post = json_decode($response->content())->post;
+
+            $this->assertEquals($post->id, $new_post->id);
+            $this->assertEquals($user_id, $new_post->user_id);
+            $this->assertEquals($title, $new_post->title);
+            $this->assertEquals($body, $new_post->body);
+            $this->assertEquals($post->created_at, $new_post->created_at);
+
+            $this->assertDatabaseHas('posts', [
+                'id' => $post->id,
+                'user_id' => $user_id,
+                'title' => $title,
+                'body' => $body,
+                'created_at' => $post->created_at,
+            ]);
+        }
+    }
 }
