@@ -395,6 +395,46 @@ class PostControllerTest extends TestCase
     }
 
     /**
+     * Test edit post with invalid user id
+     * 
+     * @test
+     */
+    public function test_edit_post_with_invalid_user_id()
+    {
+        $user = factory(User::class, 1)->create()->first();
+        $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+        $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+
+        for($i = 0; $i < 50; $i++) {
+            $post = factory(Post::class, 1)->create(['user_id' => $user->id])->first();
+
+            $this->assertDatabaseHas('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+
+            $user_id = rand(2, 51);
+            $title = $this->faker->sentence;
+            $body = $this->faker->sentence;
+            
+            $response = $this->json('PUT', '/api/posts/' . $post->id, [
+                'user_id' => $user_id,
+                'title' => $title,
+                'body' => $body
+            ]);
+
+            $response->assertStatus(401);
+
+            $errors = json_decode($response->content())->errors;
+            $this->assertEquals($errors->invalid, "You do not have permission to edit this post");
+        }
+    }
+    
+    /**
      * Test edit post successfully
      * 
      * @test
