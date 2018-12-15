@@ -70,7 +70,7 @@ class PostControllerTest extends TestCase
             $factoryComments = $factory_comment->comments;
             $callComments = $comment->comments;
             usort($factoryComments, function($a, $b) {
-                return strtotime($a->created_at) > strtotime($b->created_at);
+                return strtotime($a->created_at) >= strtotime($b->created_at);
             });
             for($c = 0; $c < count($callComments); $c++) {
                 $this->assertComments($factoryComments[$c], $callComments[$c]);
@@ -137,6 +137,10 @@ class PostControllerTest extends TestCase
         $this->assertEquals(count($factory_posts), count($posts));
 
         for($i = 0; $i < count($posts); $i++) {
+            if($i > 0){
+                $this->assertTrue(strtotime($posts[$i-1]->created_at) >= strtotime($posts[$i]->created_at));
+            }
+
             $this->assertEquals($factory_posts[$i]->id, $posts[$i]->id);
             $this->assertEquals($factory_posts[$i]->user_id, $posts[$i]->user_id);
             $this->assertEquals($factory_posts[$i]->title, $posts[$i]->title);
@@ -157,7 +161,7 @@ class PostControllerTest extends TestCase
             $comments = $posts[$i]->comments;
 
             usort($factory_comments, function($a, $b) {
-                return strtotime($a->created_at) > strtotime($b->created_at);
+                return strtotime($a->created_at) >= strtotime($b->created_at);
             });
 
             $this->assertEquals(count($factory_comments), count($comments));
@@ -233,6 +237,10 @@ class PostControllerTest extends TestCase
             $this->assertEquals($post_user->updated_at, $user->updated_at);
 
             $this->assertTrue(count($posts[$i]->comments) == 0);
+
+            if($i > 0){
+                $this->assertTrue(strtotime($posts[$i-1]->created_at) >= strtotime($posts[$i]->created_at));
+            }
         }
     }
 
