@@ -49,7 +49,7 @@ class PostControllerTest extends TestCase
         }
     }
 
-    public function testComments(Comment & $factory_comment, $comment) {
+    public function assertComments(Comment & $factory_comment, $comment) {
         $this->assertEquals($factory_comment->id, $comment->id);
         $this->assertEquals($factory_comment->user_id, $comment->user_id);
         $this->assertEquals($factory_comment->post_id, $comment->post_id);
@@ -65,7 +65,7 @@ class PostControllerTest extends TestCase
                 return strtotime($a->created_at) < strtotime($b->created_at);
             });
             for($c = 0; $c < count($callComments); $c++) {
-                $this->testComments($factoryComments[$c], $callComments[$c]);
+                $this->assertComments($factoryComments[$c], $callComments[$c]);
             }
         }
     }
@@ -153,7 +153,7 @@ class PostControllerTest extends TestCase
 
             // test comments
             for($j = 0; $j < count($posts[$i]->comments); $j++){
-                $this->testComments($factory_comments[$j], $comments[$j]);
+                $this->assertComments($factory_comments[$j], $comments[$j]);
             }
         }
     }
