@@ -35,11 +35,11 @@ class PostControllerTest extends TestCase
     }
 
     /**
-     * Test get all posts.
+     * Test get all posts with no comments.
      *
      * @test
      */
-    public function test_get_all_posts()
+    public function test_get_all_posts_with_no_comments()
     {
         $user = factory(User::class, 1)->create()->first();
         $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
@@ -87,15 +87,26 @@ class PostControllerTest extends TestCase
             $this->assertEquals($factory_posts[$i]->body, $posts[$i]->body);
             $this->assertEquals($factory_posts[$i]->created_at, $posts[$i]->created_at);
             $this->assertEquals($factory_posts[$i]->updated_at, $posts[$i]->updated_at);
+
+            $post_user = $posts[$i]->user;
+            $this->assertEquals($post_user->id, $user->id);
+            $this->assertEquals($post_user->first_name, $user->first_name);
+            $this->assertEquals($post_user->last_name, $user->last_name);
+            $this->assertEquals($post_user->email, $user->email);
+            $this->assertEquals($post_user->username, $user->username);
+            $this->assertEquals($post_user->created_at, $user->created_at);
+            $this->assertEquals($post_user->updated_at, $user->updated_at);
+
+            $this->assertTrue(count($posts[$i]->comments) == 0);
         }
     }
 
     /**
-     * Test get one post if posts exist.
+     * Test get one post without comments if posts exist.
      *
      * @test
      */
-    public function test_get_one_post_if_posts_exist()
+    public function test_get_one_post_without_comments_if_posts_exist()
     {
         $user = factory(User::class, 1)->create()->first();
         $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
@@ -135,6 +146,17 @@ class PostControllerTest extends TestCase
             $this->assertEquals($factory_post->body, $post->body);
             $this->assertEquals($factory_post->created_at, $post->created_at);
             $this->assertEquals($factory_post->updated_at, $post->updated_at);
+
+            $post_user = $post->user;
+            $this->assertEquals($post_user->id, $user->id);
+            $this->assertEquals($post_user->first_name, $user->first_name);
+            $this->assertEquals($post_user->last_name, $user->last_name);
+            $this->assertEquals($post_user->email, $user->email);
+            $this->assertEquals($post_user->username, $user->username);
+            $this->assertEquals($post_user->created_at, $user->created_at);
+            $this->assertEquals($post_user->updated_at, $user->updated_at);
+
+            $this->assertTrue(count($post->comments) == 0);
         }
     }
 
