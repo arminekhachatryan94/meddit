@@ -57,6 +57,14 @@ class PostControllerTest extends TestCase
         $this->assertEquals($factory_comment->created_at, $comment->created_at);
         $this->assertEquals($factory_comment->updated_at, $comment->updated_at);
 
+        $this->assertEquals($factory_comment->user->id, $comment->user->id);
+        $this->assertEquals($factory_comment->user->first_name, $comment->user->first_name);
+        $this->assertEquals($factory_comment->user->last_name, $comment->user->last_name);
+        $this->assertEquals($factory_comment->user->username, $comment->user->username);
+        $this->assertEquals($factory_comment->user->email, $comment->user->email);
+        $this->assertEquals($factory_comment->user->created_at, $comment->user->created_at);
+        $this->assertEquals($factory_comment->user->updated_at, $comment->user->updated_at);
+
         $this->assertEquals(count($factory_comment->comments), count($comment->comments));
         if(count($comment->comments) > 0) {
             $factoryComments = $factory_comment->comments;
