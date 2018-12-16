@@ -12,7 +12,6 @@ use App\User;
 use App\Comment;
 use App\Biography;
 use App\UserRole;
-use Mockery;
 
 class PostControllerTest extends TestCase
 {

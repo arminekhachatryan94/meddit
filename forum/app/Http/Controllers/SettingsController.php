@@ -18,12 +18,12 @@ class SettingsController extends Controller
     }
 
     public function settings( $id ) {
-        $user = $this->userService->getUser($id);
-        if( $user ){
+        try {
+            $user = $this->userService->getUser($id);
             return response()->json([
                 'user' => $user
             ], 201);
-        } else {
+        } catch(ModelNotFoundException $e) {
             return response()->json([
                 'errors' => [
                     'invalid' => 'User does not exist'
