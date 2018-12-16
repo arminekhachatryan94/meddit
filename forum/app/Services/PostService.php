@@ -17,7 +17,7 @@ class PostService implements PostContract {
         ]);
     }
 
-    public function getPost($id): Post {
+    public function getPost(int $id): Post {
         return Post::where('id', $id)->firstOrFail();
     }
 
@@ -25,7 +25,7 @@ class PostService implements PostContract {
         return Post::orderBy('created_at', 'desc')->get();
     }
     
-    public function editPost(Post $post, $req): bool {
+    public function editPost(Post $post, Array $req): bool {
         $post->title = $req['title'];	
         $post->body = $req['body'];
         return $post->save();
@@ -35,7 +35,7 @@ class PostService implements PostContract {
         return $post->delete();
     }
 
-    public function existsPost($id): bool {
+    public function existsPost(int $id): bool {
         return Post::where('id', $id)->exists();
     }
 }

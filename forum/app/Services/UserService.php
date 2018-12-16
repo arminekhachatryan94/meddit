@@ -19,19 +19,24 @@ class UserService implements UserContract {
         ]);
     }
     
-    public function getUser($id): User {
+    public function getUser(int $id): User {
         return User::where('id', $id)->firstOrFail();
     }
 
-    public function getUserWithEmail($email): User {
+    public function getUserWithEmail(String $email): User {
         return User::where('email', $email)->first();
     }
 
-    public function getUsersExcept($id): Collection {
+    public function getUsersExcept(int $id): Collection {
         return User::where('id', '!=', $id)->get();
     }
 
-    public function existsUser($id): bool {
+    public function updateUsername(User $user, String $username): bool {
+        $user->username = $username;
+        return $user->save();
+    }
+
+    public function existsUser(int $id): bool {
         return User::where('id', $id)->exists();
     }
 

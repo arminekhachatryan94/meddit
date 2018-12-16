@@ -6,10 +6,11 @@ use App\User;
 
 interface UserContract {
     public function createUser(Array $data): User;
-    public function getUser($id): User;
-    public function getUserWithEmail($email): User;
-    public function getUsersExcept($id): Collection;
-    public function existsUser($id): bool;
+    public function getUser(int $id): User;
+    public function getUserWithEmail(String $email): User;
+    public function getUsersExcept(int $id): Collection;
+    public function updateUsername(User $user, String $username): bool;
+    public function existsUser(int $id): bool;
     public function deleteUser(User $user): bool;
 }
 ?>

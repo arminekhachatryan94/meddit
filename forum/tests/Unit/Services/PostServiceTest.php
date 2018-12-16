@@ -288,9 +288,11 @@ class PostServiceTest extends TestCase
             'updated_at' => $user->updated_at
         ]);
 
-        $posts = factory(Post::class, 10)->make(['user_id' => $user->id]);
+        $posts = factory(Post::class, 10)->create(['user_id' => $user->id]);
 
         foreach($posts as $post){
+            $post->delete();
+            
             $this->assertDatabaseMissing('posts', [
                 'id' => $post->id,
                 'user_id' => $post->user_id,

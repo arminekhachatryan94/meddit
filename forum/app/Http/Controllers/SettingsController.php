@@ -45,8 +45,7 @@ class SettingsController extends Controller
             ];
             if( auth()->attempt( $req ) ){
                 $user = $this->userService->getUser($id);
-                $user->username = $request->input('username');
-                $user->save();
+                $this->userService->updateUsername($user, $request->input('username'));
                 return response()->json([
                     'message' => 'Successfully changed username'
                 ], 201);

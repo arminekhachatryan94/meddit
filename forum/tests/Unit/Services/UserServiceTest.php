@@ -195,9 +195,11 @@ class UserServiceTest extends TestCase
 
     public function test_exists_user()
     {
-        $users = factory(User::class, 5)->make();
+        $users = factory(User::class, 5)->create();
 
         foreach( $users as $user ){
+            $user->delete();
+            
             $this->assertDatabaseMissing('users', [
                 'id' => $user->id,
                 'first_name' => $user->first_name,
