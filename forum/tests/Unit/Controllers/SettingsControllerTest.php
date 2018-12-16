@@ -61,4 +61,18 @@ class SettingsControllerTest extends TestCase
             $this->assertEquals($user->updated_at, $response_user->updated_at);
         }
     }
+
+    /**
+     * Test get settings if user does not exist
+     * 
+     * @test
+     */
+    public function test_get_settings_if_user_does_not_exist() {
+        for($i = 0; $i < 20; $i++) {
+            $response = $this->call('GET', '/api/' . $i . '/settings');
+            $response->assertStatus(404);
+            $errors = json_decode($response->content())->errors;
+            $this->assertEquals($errors->invalid, "User does not exist");
+        }
+    }
 }

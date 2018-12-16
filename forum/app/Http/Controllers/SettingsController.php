@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Contracts\UserContract;
 use App\Contracts\BiographyContract;
 use Validator;
@@ -28,7 +29,7 @@ class SettingsController extends Controller
                 'errors' => [
                     'invalid' => 'User does not exist'
                 ]
-            ], 401);
+            ], 404);
         }
     }
 
