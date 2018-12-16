@@ -82,6 +82,24 @@ class PostControllerTest extends TestCase
             }
         }
     }
+    
+    public function assertDeletedComments(Comment $comment)
+    {
+        $this->assertDatabaseMissing('comments', [
+            'id' => $comment->id,
+            'user_id' => $comment->user_id,
+            'post_id' => $comment->post_id,
+            'comment_id' => $comment->comment_id,
+            'body' => $comment->body,
+            'created_at' => $comment->created_at,
+            'updated_at' => $comment->updated_at
+        ]);
+
+        $comments = $comment->comments;
+        foreach($comments as $nested_comment) {
+            $this->assertDeletedComments($nested_comment);
+        }
+    }
 
     /**
      * Test get all posts with comments.
@@ -813,7 +831,8 @@ class PostControllerTest extends TestCase
      * 
      * @test
      */
-    public function test_delete_post_successfully_as_owner_of_post() {
+    public function test_delete_post_successfully_as_owner_of_post()
+    {
         $user = factory(User::class, 1)->create()->first();
         $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
         $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
@@ -854,7 +873,8 @@ class PostControllerTest extends TestCase
      * 
      * @test
      */
-    public function test_delete_post_successfully_as_admin() {
+    public function test_delete_post_successfully_as_admin()
+    {
         $user = factory(User::class, 1)->create()->first();
         $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
         $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
@@ -892,6 +912,64 @@ class PostControllerTest extends TestCase
                 'created_at' => $post->created_at,
                 'updated_at' => $post->updated_at
             ]);
+        }
+    }
+
+    /**
+     * Test delete post with comments successully deletes the comments that belong to the post
+     * 
+     * @test
+     */
+
+    public function test_delete_post_with_comments_successfully_deletes_the_comments_that_belong_to_the_post()
+    {
+        $user = factory(User::class, 1)->create()->first();
+        $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+        $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+
+        $posts = factory(Post::class, 10)->create(['user_id' => $user->id]);
+
+        foreach($posts as $post) {
+            $this->assertDatabaseHas('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+
+            // create comments
+            $post->comments = array();
+            for($i = 1; $i <= 10; $i++) {
+                $comment = factory(Comment::class, 1)->create(['user_id' => $user->id, 'post_id' => $post->id])->first();
+                $level = 0;
+                $this->generateComments($comment, $level);
+                $post->comments = array_merge([$comment], $post->comments);
+            }
+
+            $response = $this->json('DELETE', '/api/posts/' . $post->id, [
+                'user_id' => $user->id
+            ]);
+            
+            $response->assertStatus(200);
+            $json = json_decode($response->content());
+            $this->assertEquals($json->message, "Post was successfully deleted");
+            $this->assertEquals($json->post, $post->id);
+
+            $this->assertDatabaseMissing('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+
+            // check if comments were deleted
+            foreach($post->comments as $comment) {
+                $this->assertDeletedComments($comment);
+            }
         }
     }
 }

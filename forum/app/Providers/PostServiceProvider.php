@@ -13,7 +13,8 @@ class PostServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $db = app()->make('db');
+        $db->getSchemaBuilder()->enableForeignKeyConstraints();
     }
 
     /**
