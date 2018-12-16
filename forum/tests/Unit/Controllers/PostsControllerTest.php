@@ -7,9 +7,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Http\Request;
 use Faker;
-use App\Http\Controllers\PostsController;
-use App\Contracts\PostContract;
-use App\Contracts\UserContract;
 use App\Post;
 use App\User;
 use App\Comment;
@@ -21,17 +18,11 @@ class PostControllerTest extends TestCase
 {
     use DatabaseMigrations;
 
-    protected $postService = null;
-    protected $userService = null;
-    protected $postsController = null;
     protected $faker = null;
 
     public function setUp()
     {
         parent::setUp();
-        $this->postService = Mockery::spy(PostContract::class);
-        $this->userService = Mockery::spy(UserContract::class);
-        $this->postsController = new PostsController($this->postService, $this->userService);
         $this->faker = Faker\Factory::create();
     }
 
