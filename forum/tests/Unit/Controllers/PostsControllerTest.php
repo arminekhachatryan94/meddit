@@ -762,4 +762,39 @@ class PostControllerTest extends TestCase
             $this->assertEquals($errors->invalid, "Post does not exist");
         }
     }
+
+    /**
+     * Test delete post with invalid user
+     * 
+     * @test
+     */
+    public function test_delete_post_with_invalid_user()
+    {
+        $user = factory(User::class, 1)->create()->first();
+        $user2 = factory(User::class, 1)->create()->first();
+        $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+        $bio2 = factory(Biography::class, 1)->create(['user_id' => $user2->id])->first();
+        $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+        $role2 = factory(UserRole::class, 1)->create(['user_id' => $user2->id, 'role' => 'user'])->first();
+
+        $posts = factory(Post::class, 10)->create(['user_id' => $user->id]);
+
+        foreach($posts as $post) {
+            $this->assertDatabaseHas('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+
+            $response = $this->json('DELETE', '/api/posts/' . $post->id, [
+                'user_id' => $user2->id
+            ]);
+            $response->assertStatus(401);
+            $errors = json_decode($response->content())->errors;
+            $this->assertEquals($errors->invalid, "You do not have permission to delete this post");
+        }
+    }
 }

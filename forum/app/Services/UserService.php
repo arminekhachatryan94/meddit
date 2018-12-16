@@ -20,7 +20,7 @@ class UserService implements UserContract {
     }
     
     public function getUser($id): User {
-        return User::where('id', $id)->first();
+        return User::where('id', $id)->firstOrFail();
     }
 
     public function getUserWithEmail($email): User {

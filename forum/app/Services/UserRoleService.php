@@ -13,7 +13,7 @@ class UserRoleService implements UserRoleContract {
     }
 
     public function getUserRole(int $id): UserRole {
-        return UserRole::where('id', $id)->first();
+        return UserRole::where('id', $id)->firstOrFail();
     }
 
     public function updateUserRole(UserRole $user_role, int $new_role): bool {
