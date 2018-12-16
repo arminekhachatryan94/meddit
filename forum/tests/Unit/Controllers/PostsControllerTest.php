@@ -748,7 +748,7 @@ class PostControllerTest extends TestCase
     }
 
     /**
-     * Test delete post successfully without comments
+     * Test delete post if post does not exist
      * 
      * @test
      */
@@ -759,6 +759,7 @@ class PostControllerTest extends TestCase
             $response = $this->json('DELETE', '/api/posts/' . $i);
             $response->assertStatus(404);
             $errors = json_decode($response->content())->errors;
+
             $this->assertEquals($errors->invalid, "Post does not exist");
         }
     }
@@ -795,6 +796,56 @@ class PostControllerTest extends TestCase
             $response->assertStatus(401);
             $errors = json_decode($response->content())->errors;
             $this->assertEquals($errors->invalid, "You do not have permission to delete this post");
+
+            $this->assertDatabaseHas('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+        }
+    }
+
+    /**
+     * Test delete post successfully as owner of post
+     * 
+     * @test
+     */
+    public function test_delete_post_successfully_as_owner_of_post() {
+        $user = factory(User::class, 1)->create()->first();
+        $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+        $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+
+        $posts = factory(Post::class, 10)->create(['user_id' => $user->id]);
+
+        foreach($posts as $post) {
+            $this->assertDatabaseHas('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+
+            $response = $this->json('DELETE', '/api/posts/' . $post->id, [
+                'user_id' => $user->id
+            ]);
+            $response->assertStatus(200);
+            $json = json_decode($response->content());
+            $this->assertEquals($json->message, "Post was successfully deleted");
+            $this->assertEquals($json->post, $post->id);
+
+            $this->assertDatabaseMissing('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
         }
     }
 }
