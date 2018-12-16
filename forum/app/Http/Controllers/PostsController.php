@@ -140,9 +140,9 @@ class PostsController extends Controller
     }
 
     public function delete(Request $request, $id) {
-        $post = $this->postService->getPost($id);
-
-        if( $post ){
+        try {
+            $post = $this->postService->getPost($id);
+        
             $user = $this->userService->getUser($request->input('user_id'));
             if( ($post->user_id == $request->input('user_id')) || ($user->role == 1) ){
                 $deleted = $this->postService->deletePost($post);
@@ -165,7 +165,7 @@ class PostsController extends Controller
                     ]
                 ], 401);
             }
-        } else {
+        } catch(ModelNotFoundException $e) {
             return response()->json([
                 'errors' => [
                     'invalid' => 'Post does not exist'

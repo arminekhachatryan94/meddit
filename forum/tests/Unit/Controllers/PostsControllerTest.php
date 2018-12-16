@@ -35,7 +35,8 @@ class PostControllerTest extends TestCase
         $this->faker = Faker\Factory::create();
     }
 
-    private function generateComments(Comment & $comment, int & $level){
+    private function generateComments(Comment & $comment, int & $level)
+    {
         $rand = rand(0,1);
         $comment->comments = array();
         if($rand && $level < 5) {
@@ -49,7 +50,8 @@ class PostControllerTest extends TestCase
         }
     }
 
-    public function assertComments(Comment & $factory_comment, $comment) {
+    public function assertComments(Comment & $factory_comment, $comment)
+    {
         $this->assertEquals($factory_comment->id, $comment->id);
         $this->assertEquals($factory_comment->user_id, $comment->user_id);
         $this->assertEquals($factory_comment->post_id, $comment->post_id);
@@ -309,7 +311,8 @@ class PostControllerTest extends TestCase
      * @test
      */
 
-     public function test_get_one_post_with_comments_if_post_exists() {
+    public function test_get_one_post_with_comments_if_post_exists()
+    {
         $user = factory(User::class, 1)->create()->first();
         $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
         $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
@@ -399,7 +402,8 @@ class PostControllerTest extends TestCase
      *
      * @test
      */
-    public function test_get_one_post_if_posts_do_not_exist() {
+    public function test_get_one_post_if_posts_do_not_exist()
+    {
         $user = factory(User::class, 1)->create()->first();
         $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
         $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
@@ -740,6 +744,22 @@ class PostControllerTest extends TestCase
                 'body' => $body,
                 'created_at' => $post->created_at,
             ]);
+        }
+    }
+
+    /**
+     * Test delete post successfully without comments
+     * 
+     * @test
+     */
+
+    public function test_delete_post_if_post_does_not_exist()
+    {
+        for($i = 1; $i <= 50; $i++) {
+            $response = $this->json('DELETE', '/api/posts/' . $i);
+            $response->assertStatus(404);
+            $errors = json_decode($response->content())->errors;
+            $this->assertEquals($errors->invalid, "Post does not exist");
         }
     }
 }
