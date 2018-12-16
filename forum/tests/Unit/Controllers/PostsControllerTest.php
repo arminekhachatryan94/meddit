@@ -848,4 +848,50 @@ class PostControllerTest extends TestCase
             ]);
         }
     }
+
+    /**
+     * Test delete post successfully as admin
+     * 
+     * @test
+     */
+    public function test_delete_post_successfully_as_admin() {
+        $user = factory(User::class, 1)->create()->first();
+        $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+        $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+
+        $user2 = factory(User::class, 1)->create()->first();
+        $bio2 = factory(Biography::class, 1)->create(['user_id' => $user2->id])->first();
+        $role2 = factory(UserRole::class, 1)->create(['user_id' => $user2->id, 'role' => 1])->first();
+
+        $posts = factory(Post::class, 10)->create(['user_id' => $user->id]);
+
+        foreach($posts as $post) {
+            $this->assertDatabaseHas('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+
+            $response = $this->json('DELETE', '/api/posts/' . $post->id, [
+                'user_id' => $user2->id
+            ]);
+            
+            $response->assertStatus(200);
+            $json = json_decode($response->content());
+            $this->assertEquals($json->message, "Post was successfully deleted");
+            $this->assertEquals($json->post, $post->id);
+
+            $this->assertDatabaseMissing('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+        }
+    }
 }
