@@ -245,11 +245,11 @@ class PostControllerTest extends TestCase
     }
 
     /**
-     * Test get one post without comments if posts exist.
+     * Test get one post without comments if post exists.
      *
      * @test
      */
-    public function test_get_one_post_without_comments_if_posts_exist()
+    public function test_get_one_post_without_comments_if_post_exists()
     {
         $user = factory(User::class, 1)->create()->first();
         $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
@@ -302,6 +302,97 @@ class PostControllerTest extends TestCase
             $this->assertTrue(count($post->comments) == 0);
         }
     }
+
+    /**
+     * Test get one post with comments if post exists
+     * 
+     * @test
+     */
+
+     public function test_get_one_post_with_comments_if_post_exists() {
+        $user = factory(User::class, 1)->create()->first();
+        $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+        $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'username' => $user->username,
+            'password' => $user->password,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at
+        ]);
+
+        $factory_posts = factory(Post::class, 10)->create(['user_id' => $user->id]);
+
+        foreach($factory_posts as $post) {
+            $this->assertDatabaseHas('posts', [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at
+            ]);
+            $post->comments = array();
+
+            // create comments
+            for($i = 1; $i <= 10; $i++) {
+                $comment = factory(Comment::class, 1)->create(['user_id' => $user->id, 'post_id' => $post->id])->first();
+                $level = 0;
+                $this->generateComments($comment, $level);
+                $post->comments = array_merge([$comment], $post->comments);
+            }
+        }
+
+        foreach($factory_posts as $factory_post) {
+            $this->assertDatabaseHas('posts', [
+                'id' => $factory_post->id,
+                'user_id' => $factory_post->user_id,
+                'title' => $factory_post->title,
+                'body' => $factory_post->body,
+                'created_at' => $factory_post->created_at,
+                'updated_at' => $factory_post->updated_at
+            ]);
+
+            $response = $this->call('GET', '/api/posts/' . $factory_post->id);
+            $response->assertStatus(200);
+
+            $post = json_decode($response->content())->post;
+        
+            $this->assertEquals($factory_post->id, $post->id);
+            $this->assertEquals($factory_post->user_id, $post->user_id);
+            $this->assertEquals($factory_post->title, $post->title);
+            $this->assertEquals($factory_post->body, $post->body);
+            $this->assertEquals($factory_post->created_at, $post->created_at);
+            $this->assertEquals($factory_post->updated_at, $post->updated_at);
+
+            $post_user = $post->user;
+            $this->assertEquals($post_user->id, $user->id);
+            $this->assertEquals($post_user->first_name, $user->first_name);
+            $this->assertEquals($post_user->last_name, $user->last_name);
+            $this->assertEquals($post_user->email, $user->email);
+            $this->assertEquals($post_user->username, $user->username);
+            $this->assertEquals($post_user->created_at, $user->created_at);
+            $this->assertEquals($post_user->updated_at, $user->updated_at);
+
+            $factory_comments = $factory_post->comments;
+            $comments = $post->comments;
+
+            usort($factory_comments, function($a, $b) {
+                return strtotime($a->created_at) >= strtotime($b->created_at);
+            });
+
+            $this->assertEquals(count($factory_comments), count($comments));
+
+            // test comments
+            for($j = 0; $j < count($post->comments); $j++){
+                $this->assertComments($factory_comments[$j], $comments[$j]);
+            }
+        }
+     }
 
     /**
      * Test get one post if posts exist.
