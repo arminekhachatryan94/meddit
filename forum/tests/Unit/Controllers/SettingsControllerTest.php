@@ -213,4 +213,55 @@ class SettingsControllerTest extends TestCase
             $this->assertEquals($invalid, "Invalid credentials");
         }
     }
+
+    /**
+     * Test update biography successfully
+     * 
+     * @test
+     */
+    public function test_update_biography_successfully()
+    {
+        for($i = 1; $i <= 20; $i++) {
+            $biography = $this->faker->sentence;
+            $password = $this->faker->sentence;
+            $user = factory(User::class, 1)->create(['password' => Hash::make($password)])->first();
+            $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+
+            $this->assertDatabaseHas('users', [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'username' => $user->username,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]);
+
+            $this->assertDatabaseHas('biographies', [
+                'id' => $bio->id,
+                'user_id' => $bio->user_id,
+                'description' => $bio->description,
+                'created_at' => $bio->created_at,
+                'updated_at' => $bio->updated_at
+            ]);
+
+            $response = $this->call('PUT', '/api/' . $user->id . '/settings/biography', [
+                'biography' => $biography,
+                'password' => $password
+            ]);
+            $response->assertStatus(201);
+
+            $message = json_decode($response->content())->message;
+            $this->assertEquals($message, "Successfully updated biography");
+
+            $this->assertDatabaseHas('biographies', [
+                'id' => $bio->id,
+                'user_id' => $bio->user_id,
+                'description' => $biography,
+                'created_at' => $bio->created_at,
+                'updated_at' => $bio->updated_at
+            ]);
+        }
+    }
 }
