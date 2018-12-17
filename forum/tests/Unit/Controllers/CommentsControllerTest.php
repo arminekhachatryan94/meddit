@@ -49,13 +49,32 @@ class CommentsControllerTest extends TestCase
 
             $this->assertEquals($errors->user_id[0], "The user id field is required.");
             $this->assertEquals($errors->body[0], "The body field is required.");
+        }
+    }
 
-            $this->assertDatabaseMissing('comments', [
-                'user_id' => '',
-                'post_id' => '',
-                'comment_id' => '',
-                'body' => ''
+    /**
+     * Test create comment on post if user does not exist.
+     *
+     * @test
+     */
+    public function test_create_comment_on_post_if_user_does_not_exist()
+    {
+        $user = factory(User::class, 1)->create()->first();
+        $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+        $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+        $post = factory(Post::class, 1)->create(['user_id' => $user->id])->first();
+
+        for($i = 2; $i <= 21; $i++) {
+            $response = $this->call('POST', '/api/posts/' . $post->id . '/new-comment', [
+                'user_id' => $i,
+                'body' => $this->faker->sentence
             ]);
+
+            $response->assertStatus(404);
+
+            $errors = json_decode($response->content())->errors;
+
+            $this->assertEquals($errors->invalid, "User does not exist");
         }
     }
 
