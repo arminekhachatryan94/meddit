@@ -86,6 +86,7 @@ class PostControllerTest extends TestCase
                 'email' => $user->email,
                 'password' => $password
             ]);
+            $response->assertStatus(201);
         }
     }
     
