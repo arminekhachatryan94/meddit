@@ -26,7 +26,7 @@ class CommentsControllerTest extends TestCase
     }
 
     /**
-     * Test get create comment on post successfully.
+     * Test create comment on post with empty request.
      *
      * @test
      */
@@ -59,8 +59,34 @@ class CommentsControllerTest extends TestCase
         }
     }
 
+
     /**
-     * Test get create comment on post successfully.
+     * Test create comment on post if post does not exist.
+     *
+     * @test
+     */
+    public function test_create_comment_on_post_if_post_does_not_exist()
+    {
+        $user = factory(User::class, 1)->create()->first();
+        $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+        $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+        
+        for($i = 1; $i <= 20; $i++) {
+            $response = $this->call('POST', '/api/posts/' . $i . '/new-comment', [
+                'user_id' => $user->id,
+                'body' => $this->faker->sentence
+            ]);
+
+            $response->assertStatus(404);
+
+            $errors = json_decode($response->content())->errors;
+
+            $this->assertEquals($errors->invalid, "Post does not exist");
+        }
+    }
+
+    /**
+     * Test create comment on post successfully.
      *
      * @test
      */

@@ -62,13 +62,13 @@ class CommentsController extends Controller
                     'errors' => [
                         'invalid' => 'Post does not exist'
                     ]
-                ], 401);
+                ], 404);
             } else {
                 return response()->json([
                     'errors' => [
                         'invalid' => 'User does not exist'
                     ]
-                ], 401);
+                ], 404);
             }
         } else {
             return response()->json([ 'errors' => $errors ], 401);
