@@ -75,4 +75,28 @@ class SettingsControllerTest extends TestCase
             $this->assertEquals($errors->invalid, "User does not exist");
         }
     }
+
+    /**
+     * Test update username with empty request
+     * 
+     * @test
+     */
+    public function test_update_username_with_empty_request() {
+        for($i = 0; $i < 1; $i++) {
+            $user = factory(User::class, 1)->create()->first();
+            $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+            $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+
+            $response = $this->call('PUT', '/api/' . $user->id . '/settings/username', [
+                'username' => '',
+                'password' => ''
+            ]);
+            $response->assertStatus(401);
+            $errors = json_decode($response->content())->errors;
+            $username_error = $errors->username[0];
+            $password_error = $errors->password[0];
+            $this->assertEquals($username_error, "The username field is required.");
+            $this->assertEquals($password_error, "The password field is required.");
+        }
+    }
 }
