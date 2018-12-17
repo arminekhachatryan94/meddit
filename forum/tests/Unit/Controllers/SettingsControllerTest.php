@@ -194,4 +194,23 @@ class SettingsControllerTest extends TestCase
             $this->assertEquals($password_error, "The password field is required.");
         }
     }
+
+
+    /**
+     * Test update biography with invalid credentials
+     * 
+     * @test
+     */
+    public function test_update_biography_with_invalid_credentials()
+    {
+        for($i = 1; $i <= 20; $i++) {
+            $response = $this->call('PUT', '/api/' . $i . '/settings/biography', [
+                'biography' => $this->faker->sentence,
+                'password' => $this->faker->sentence
+            ]);
+            $response->assertStatus(401);
+            $invalid = json_decode($response->content())->invalid;
+            $this->assertEquals($invalid, "Invalid credentials");
+        }
+    }
 }
