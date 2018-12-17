@@ -7,6 +7,7 @@ use App\Services\UserService;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use App\User;
 use App\Post;
+use Faker;
 
 class UserServiceTest extends TestCase
 {
@@ -130,6 +131,43 @@ class UserServiceTest extends TestCase
             $this->assertEquals($user->password, $getUser->password);
             $this->assertEquals($user->created_at, $getUser->created_at);
             $this->assertEquals($user->updated_at, $getUser->updated_at);
+        }
+    }
+
+    /**
+     * Test update username
+     * 
+     * @test
+     */
+    public function test_update_username() {
+        $faker = Faker\Factory::create();
+
+        $users = factory(User::class, 20)->create();
+        foreach($users as $user) {
+            $this->assertDatabaseHas('users', [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'username' => $user->username,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]);
+
+            $username = $faker->username;
+            $this->userService->updateUsername($user, $username);
+
+            $this->assertDatabaseHas('users', [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'username' => $username,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]);
         }
     }
 
