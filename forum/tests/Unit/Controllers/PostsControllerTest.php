@@ -13,7 +13,7 @@ use App\Comment;
 use App\Biography;
 use App\UserRole;
 
-class PostControllerTest extends TestCase
+class PostsControllerTest extends TestCase
 {
     use DatabaseMigrations;
 

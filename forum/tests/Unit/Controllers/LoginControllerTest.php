@@ -74,20 +74,20 @@ class PostControllerTest extends TestCase
      * 
      * @test
      */
-    public function test_login_successfully()
-    {
-        $password = $this->faker->password;
-        for($i = 0; $i < 20; $i++) {
-            $user = factory(User::class, 1)->create(['password' => Hash::make($password)])->first();
-            $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
-            $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+    // public function test_login_successfully()
+    // {
+    //     $password = $this->faker->password;
+    //     for($i = 0; $i < 20; $i++) {
+    //         $user = factory(User::class, 1)->create(['password' => Hash::make($password)])->first();
+    //         $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+    //         $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
 
-            $response = $this->call('POST', '/api/login', [
-                'email' => $user->email,
-                'password' => $password
-            ]);
-            $response->assertStatus(201);
-        }
-    }
+    //         $response = $this->call('POST', '/api/login', [
+    //             'email' => $user->email,
+    //             'password' => $password
+    //         ]);
+    //         $response->assertStatus(201);
+    //     }
+    // }
     
 }

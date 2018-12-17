@@ -166,7 +166,6 @@ class SettingsControllerTest extends TestCase
                 'username' => $username,
                 'password' => $user->password,
                 'created_at' => $user->created_at,
-                'updated_at' => $user->updated_at
             ]);
         }
     }
@@ -260,7 +259,6 @@ class SettingsControllerTest extends TestCase
                 'user_id' => $bio->user_id,
                 'description' => $biography,
                 'created_at' => $bio->created_at,
-                'updated_at' => $bio->updated_at
             ]);
         }
     }
