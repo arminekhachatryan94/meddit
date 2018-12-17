@@ -30,6 +30,40 @@ class CommentsControllerTest extends TestCase
      *
      * @test
      */
+    public function test_create_comment_on_post_with_empty_request()
+    {
+        $user = factory(User::class, 1)->create()->first();
+        $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
+        $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+        $post = factory(Post::class, 1)->create(['user_id' => $user->id])->first();
+        
+        for($j = 0; $j <= 20; $j++) {
+            $response = $this->call('POST', '/api/posts/' . $post->id . '/new-comment', [
+                'user_id' => '',
+                'body' => ''
+            ]);
+
+            $response->assertStatus(401);
+
+            $errors = json_decode($response->content())->errors;
+
+            $this->assertEquals($errors->user_id[0], "The user id field is required.");
+            $this->assertEquals($errors->body[0], "The body field is required.");
+
+            $this->assertDatabaseMissing('comments', [
+                'user_id' => '',
+                'post_id' => '',
+                'comment_id' => '',
+                'body' => ''
+            ]);
+        }
+    }
+
+    /**
+     * Test get create comment on post successfully.
+     *
+     * @test
+     */
     public function test_create_comment_on_post_successfully()
     {
         $user = factory(User::class, 1)->create()->first();
