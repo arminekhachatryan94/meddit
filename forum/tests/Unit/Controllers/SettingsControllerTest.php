@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use App\User;
 use App\UserRole;
 use App\Biography;
@@ -121,6 +122,48 @@ class SettingsControllerTest extends TestCase
             $response->assertStatus(401);
             $invalid = json_decode($response->content())->invalid;
             $this->assertEquals($invalid, "Invalid credentials");
+        }
+    }
+
+    /**
+     * Test update username successfully
+     * 
+     * @test
+     */
+    public function test_update_username_successfully() {
+        for($i = 1; $i <= 20; $i++) {
+            $username = $this->faker->username;
+            $password = $this->faker->sentence;
+            $user = factory(User::class, 1)->create(['password' => Hash::make($password)])->first();
+
+            $this->assertDatabaseHas('users', [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'username' => $user->username,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]);
+
+            $response = $this->call('PUT', '/api/' . $user->id . '/settings/username', [
+                'username' => $username,
+                'password' => $password
+            ]);
+            $message = json_decode($response->content())->message;
+            $this->assertEquals($message, "Successfully changed username");
+
+            $this->assertDatabaseHas('users', [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'username' => $username,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]);
         }
     }
 }
