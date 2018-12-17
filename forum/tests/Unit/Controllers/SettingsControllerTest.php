@@ -151,6 +151,8 @@ class SettingsControllerTest extends TestCase
                 'username' => $username,
                 'password' => $password
             ]);
+            $response->assertStatus(201);
+            
             $message = json_decode($response->content())->message;
             $this->assertEquals($message, "Successfully changed username");
 

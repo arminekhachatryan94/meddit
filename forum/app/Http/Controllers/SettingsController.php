@@ -45,11 +45,11 @@ class SettingsController extends Controller
                 'password' => $request->input('password')
             ];
             if( auth()->attempt( $req ) ){
-                    $user = $this->userService->getUser($id);
-                    $this->userService->updateUsername($user, $request->input('username'));
-                    return response()->json([
-                        'message' => 'Successfully changed username'
-                    ], 201);
+                $user = $this->userService->getUser($id);
+                $this->userService->updateUsername($user, $request->input('username'));
+                return response()->json([
+                    'message' => 'Successfully changed username'
+                ], 201);
             } else {
                 return response()->json([
                     'invalid' => 'Invalid credentials'
