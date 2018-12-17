@@ -44,4 +44,27 @@ class PostControllerTest extends TestCase
             $this->assertEquals($password_error, "The password field is required.");
         }
     }
+
+    /**
+     * Test login with invalid credentials
+     * 
+     * @test
+     */
+    public function test_login_with_invalid_credentials()
+    {
+        for($i = 0; $i < 20; $i++) {
+            $email = $this->faker->email;
+            $password = $this->faker->password;
+
+            $response = $this->call('POST', '/api/login', [
+                'email' => $email,
+                'password' => $password
+            ]);
+            $response->assertStatus(404);
+
+            $errors = json_decode($response->content())->errors;
+
+            $this->assertEquals($errors->invalid, "Invalid credentials. Please try again.");
+        }
+    }
 }
