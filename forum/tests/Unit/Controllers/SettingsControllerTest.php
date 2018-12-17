@@ -8,14 +8,18 @@ use Illuminate\Http\Request;
 use App\User;
 use App\UserRole;
 use App\Biography;
+use Faker;
 
 class SettingsControllerTest extends TestCase
 {
     use DatabaseMigrations;
 
+    protected $faker = null;
+
     public function setUp()
     {
         parent::setUp();
+        $this->faker = Faker\Factory::create();
     }
 
     /**
@@ -23,7 +27,8 @@ class SettingsControllerTest extends TestCase
      * 
      * @test
      */
-    public function test_get_settings_successfully() {
+    public function test_get_settings_successfully()
+    {
         for($i = 0; $i < 20; $i++) {
             $user = factory(User::class, 1)->create()->first();
             $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
@@ -67,7 +72,8 @@ class SettingsControllerTest extends TestCase
      * 
      * @test
      */
-    public function test_get_settings_if_user_does_not_exist() {
+    public function test_get_settings_if_user_does_not_exist()
+    {
         for($i = 0; $i < 20; $i++) {
             $response = $this->call('GET', '/api/' . $i . '/settings');
             $response->assertStatus(404);
@@ -81,8 +87,9 @@ class SettingsControllerTest extends TestCase
      * 
      * @test
      */
-    public function test_update_username_with_empty_request() {
-        for($i = 0; $i < 1; $i++) {
+    public function test_update_username_with_empty_request()
+    {
+        for($i = 0; $i < 20; $i++) {
             $user = factory(User::class, 1)->create()->first();
             $role = factory(UserRole::class, 1)->create(['user_id' => $user->id])->first();
             $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
@@ -97,6 +104,23 @@ class SettingsControllerTest extends TestCase
             $password_error = $errors->password[0];
             $this->assertEquals($username_error, "The username field is required.");
             $this->assertEquals($password_error, "The password field is required.");
+        }
+    }
+
+    /**
+     * Test update username with invalid credentials
+     * 
+     * @test
+     */
+    public function test_update_username_with_invalid_credentials() {
+        for($i = 1; $i <= 20; $i++) {
+            $response = $this->call('PUT', '/api/' . $i . '/settings/username', [
+                'username' => $this->faker->username,
+                'password' => $this->faker->sentence
+            ]);
+            $response->assertStatus(401);
+            $invalid = json_decode($response->content())->invalid;
+            $this->assertEquals($invalid, "Invalid credentials");
         }
     }
 }

@@ -45,17 +45,11 @@ class SettingsController extends Controller
                 'password' => $request->input('password')
             ];
             if( auth()->attempt( $req ) ){
-                try {
                     $user = $this->userService->getUser($id);
                     $this->userService->updateUsername($user, $request->input('username'));
                     return response()->json([
                         'message' => 'Successfully changed username'
                     ], 201);
-                } catch(ModelNotFoundException $e) {
-                    return response()->json([
-                        'invalid' => 'User does not exist'
-                    ], 404);
-                }
             } else {
                 return response()->json([
                     'invalid' => 'Invalid credentials'
