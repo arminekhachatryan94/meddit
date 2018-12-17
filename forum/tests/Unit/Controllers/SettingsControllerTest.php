@@ -113,7 +113,8 @@ class SettingsControllerTest extends TestCase
      * 
      * @test
      */
-    public function test_update_username_with_invalid_credentials() {
+    public function test_update_username_with_invalid_credentials()
+    {
         for($i = 1; $i <= 20; $i++) {
             $response = $this->call('PUT', '/api/' . $i . '/settings/username', [
                 'username' => $this->faker->username,
@@ -130,7 +131,8 @@ class SettingsControllerTest extends TestCase
      * 
      * @test
      */
-    public function test_update_username_successfully() {
+    public function test_update_username_successfully()
+    {
         for($i = 1; $i <= 20; $i++) {
             $username = $this->faker->username;
             $password = $this->faker->sentence;
@@ -152,7 +154,7 @@ class SettingsControllerTest extends TestCase
                 'password' => $password
             ]);
             $response->assertStatus(201);
-            
+
             $message = json_decode($response->content())->message;
             $this->assertEquals($message, "Successfully changed username");
 
@@ -166,6 +168,30 @@ class SettingsControllerTest extends TestCase
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at
             ]);
+        }
+    }
+
+    /**
+     * Test update biography with empty request
+     * 
+     * @test
+     */
+    public function test_update_biography_with_empty_request()
+    {
+        for($i = 0; $i < 20; $i++) {
+            $user = factory(User::class, 1)->create()->first();
+            $bio = factory(Biography::class, 1)->create(['user_id' => $user->id])->first();
+
+            $response = $this->call('PUT', '/api/' . $user->id . '/settings/biography', [
+                'username' => '',
+                'password' => ''
+            ]);
+            $response->assertStatus(401);
+            $errors = json_decode($response->content())->errors;
+            $biography_error = $errors->biography[0];
+            $password_error = $errors->password[0];
+            $this->assertEquals($biography_error, "The biography field is required.");
+            $this->assertEquals($password_error, "The password field is required.");
         }
     }
 }
