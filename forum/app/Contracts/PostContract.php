@@ -1,14 +1,15 @@
 <?php
 namespace App\Contracts;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use App\Post;
 
 interface PostContract{
-    public function createPost(Post $post);
-    public function getPost($id);
-    public function getAllPosts();
-    public function editPost(Post $post, $req);
-    public function deletePost(Post $post);
-    public function existsPost($id);
+    public function createPost(Array $data): Post;
+    public function getPost(int $id): Post;
+    public function getAllPosts(): Collection;
+    public function editPost(Post $post, Array $req): bool;
+    public function deletePost(Post $post): bool;
+    public function existsPost(int $id): bool;
 }
 ?>

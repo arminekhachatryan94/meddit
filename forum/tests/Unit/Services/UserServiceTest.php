@@ -7,6 +7,7 @@ use App\Services\UserService;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use App\User;
 use App\Post;
+use Faker;
 
 class UserServiceTest extends TestCase
 {
@@ -134,6 +135,43 @@ class UserServiceTest extends TestCase
     }
 
     /**
+     * Test update username
+     * 
+     * @test
+     */
+    public function test_update_username() {
+        $faker = Faker\Factory::create();
+
+        $users = factory(User::class, 20)->create();
+        foreach($users as $user) {
+            $this->assertDatabaseHas('users', [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'username' => $user->username,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]);
+
+            $username = $faker->username;
+            $this->userService->updateUsername($user, $username);
+
+            $this->assertDatabaseHas('users', [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'username' => $username,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]);
+        }
+    }
+
+    /**
      * Test get users except.
      * 
      * @Test
@@ -195,9 +233,11 @@ class UserServiceTest extends TestCase
 
     public function test_exists_user()
     {
-        $users = factory(User::class, 5)->make();
+        $users = factory(User::class, 5)->create();
 
         foreach( $users as $user ){
+            $user->delete();
+            
             $this->assertDatabaseMissing('users', [
                 'id' => $user->id,
                 'first_name' => $user->first_name,

@@ -31,13 +31,13 @@ class User extends Authenticatable
     ];
 
     public function getBiographyAttribute() {
-        $bio = Biography::where('user_id', $this->id)->get();
-        return $bio[0]->description;
+        $bio = Biography::where('user_id', $this->id)->firstOrFail();
+        return $bio->description;
     }
 
     public function getRoleAttribute() {
-        $role = UserRole::where('user_id', $this->id)->get();
-        return $role[0]->role;
+        $role = UserRole::where('user_id', $this->id)->firstOrFail();
+        return $role->role;
     }
 
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Contracts\PostContract;
 use App\Contracts\UserContract;
+use App\Contracts\CommentContract;
 use App\Comment;
 use App\Post;
 use App\User;
@@ -14,10 +15,12 @@ class CommentsController extends Controller
 {
     protected $postService = null;
     protected $userService = null;
+    protected $commentService = null;
 
-    public function __construct(PostContract $postService, UserContract $userService){
+    public function __construct(PostContract $postService, UserContract $userService, CommentContract $commentService){
         $this->postService = $postService;
         $this->userService = $userService;
+        $this->commentService = $commentService;
     }
 
     protected function validator(array $data) {
@@ -32,24 +35,6 @@ class CommentsController extends Controller
                 'comment_id' => 'required',
                 'user_id' => 'required',
                 'body' => 'required|max:255'
-            ]);
-        }
-    }
-    protected function save(array $data) {
-        if( $data['comment_id'] == NULL ){
-            return Comment::create([
-                'post_id' => $data['post_id'],
-                'comment_id' => NULL,
-                'user_id' => $data['user_id'],
-                'body' => $data['body']
-            ]);
-        }
-        else {
-            return Comment::create([
-                'post_id' => NULL,
-                'comment_id' => $data['comment_id'],
-                'user_id' => $data['user_id'],
-                'body' => $data['body']
             ]);
         }
     }
@@ -68,7 +53,7 @@ class CommentsController extends Controller
             $post = $this->postService->existsPost($id);
             $user = $this->userService->existsUser($request->input('user_id'));
             if( $post && $user ){
-                $comment = $this->save($req);
+                $comment = $this->commentService->createComment($req);
                 $comment->user;
                 $comment->comments;
                 return response()->json([ 'comment' => $comment ], 201);
@@ -77,20 +62,20 @@ class CommentsController extends Controller
                     'errors' => [
                         'invalid' => 'Post does not exist'
                     ]
-                ], 401);
+                ], 404);
             } else {
                 return response()->json([
                     'errors' => [
                         'invalid' => 'User does not exist'
                     ]
-                ], 401);
+                ], 404);
             }
         } else {
             return response()->json([ 'errors' => $errors ], 401);
         };
     }
 
-    public function commentOnComment(Request $request, $id) {
+    public function commentOnComment(Request $request, int $id) {
         $req = [
             'post_id' => NULL,
             'comment_id' => $id,
@@ -101,10 +86,10 @@ class CommentsController extends Controller
         $errors = $this->validator($req)->errors();
 
         if( count($errors) == 0 ){
-            $comment = Comment::where('id', $id)->exists();
+            $comment = $this->commentService->existsComment($id);
             $user = $this->userService->existsUser($request->input('user_id'));
             if( $comment && $user ){
-                $newcomment = $this->save($req);
+                $newcomment = $this->commentService->createComment($req);
                 $newcomment->user;
                 $newcomment->comments;
                 return response()->json([ 'comment' => $newcomment ], 201);
@@ -126,8 +111,8 @@ class CommentsController extends Controller
         };
     }
 
-    public function edit(Request $request, $comment) {
-        $comment2 = Comment::find($comment);
+    public function edit(Request $request, int $id) {
+        $comment2 = $this->commentService->getComment($id);
 
         if( $comment2 ) {
             if( $comment2->user_id == $request->input('user_id') ){
@@ -135,8 +120,7 @@ class CommentsController extends Controller
                     ['body' => $request->input('body')],
                     ['body' => 'required|string|max:255'])->errors();
                 if( count($errors) == 0 ){
-                    $comment2->body = $request->input('body');
-                    $comment2->save();
+                    $this->commentService->editComment($comment2, $request->input('body'));
                     return response()->json([
                         'comment' => $comment2
                     ], 201);
@@ -161,13 +145,13 @@ class CommentsController extends Controller
         }
     }
 
-    public function delete(Request $request, $comment) {
-        $comment2 = Comment::find($comment);
+    public function delete(Request $request, int $id) {
+        $comment2 = $this->commentService->getComment($id);
 
         if( $comment2 ){
             $user = $this->userService->getUser($request->input('user_id'));
             if( $comment2->user_id == $request->user_id || $user->role == 1 ){
-                $comment2->delete();
+                $this->commentService->deleteComment($comment2);
                 return response()->json([
                     'comment' => 'Comment was successfully deleted'
                 ], 201);

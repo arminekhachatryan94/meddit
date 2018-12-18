@@ -14,7 +14,7 @@ class CommentsTableSeeder extends Seeder
      */
     public function run()
     {
-        for($i = 0; $i < 10; $i++){
+        for($i = 0; $i < 50; $i++){
             $uid = rand(1,5);
             $rand = rand(1,10);
             $comments = App\Comment::all()->pluck('id')->toArray();

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Contracts\PostContract;
 use App\Contracts\UserContract;
 use App\Post;
@@ -54,14 +55,9 @@ class PostsController extends Controller
     }
 
     public function post($id) {
-        $post = $this->postService->getPost($id);
-        if( !$post ){
-            return response()->json([
-                'errors' => [
-                    'invalid' => 'Post does not exist'
-                ]
-            ], 404);
-        } else {
+        try {
+            $post = $this->postService->getPost($id);
+            
             $post->comments;
             $post->user;
             foreach ($post->comments as $comment ){
@@ -70,6 +66,12 @@ class PostsController extends Controller
             return response()->json([
                 'post' => $post
             ], 200);
+        } catch(ModelNotFoundException $e) {
+            return response()->json([
+                'errors' => [
+                    'invalid' => 'Post does not exist'
+                ]
+            ], 404);
         }
     }
 
@@ -78,12 +80,8 @@ class PostsController extends Controller
         if( count($errors) == 0 ){
             $user_exists = $this->userService->existsUser($request->input('user_id'));
             if( $user_exists ){
-                $post = new Post();
-                $post->title = $request->input('title');
-                $post->body = $request->input('body');
-                $post->user_id = $request->input('user_id');
-                $created = $this->postService->createPost($post);
-                if( $created ){
+                $post = $this->postService->createPost($request->all());
+                if( $post ){
                     $post->comments;
                     $post->user;
                     return response()->json([ 'post' => $post ], 201);
@@ -113,9 +111,9 @@ class PostsController extends Controller
             'body' => $request->input('body')
         ];
 
-        $post = $this->postService->getPost($id);
-        if( $post ){	
-            $errors = validator($request->all())->errors();
+        try {
+            $post = $this->postService->getPost($id);
+            $errors = $this->validator($request->all())->errors();
             if( count($errors) ) {	
                 return response()->json([	
                     'errors' => $errors	
@@ -132,7 +130,7 @@ class PostsController extends Controller
                     return response()->json(['errors' => ['invalid' => 'You do not have permission to edit this post']], 401);	
                 }	
             }	
-        } else {	
+        } catch(ModelNotFoundException $e) {	
             return response()->json([	
                 'errors' => [	
                     'invalid' => 'Post not found'	
@@ -142,9 +140,9 @@ class PostsController extends Controller
     }
 
     public function delete(Request $request, $id) {
-        $post = $this->postService->getPost($id);
-
-        if( $post ){
+        try {
+            $post = $this->postService->getPost($id);
+        
             $user = $this->userService->getUser($request->input('user_id'));
             if( ($post->user_id == $request->input('user_id')) || ($user->role == 1) ){
                 $deleted = $this->postService->deletePost($post);
@@ -167,7 +165,7 @@ class PostsController extends Controller
                     ]
                 ], 401);
             }
-        } else {
+        } catch(ModelNotFoundException $e) {
             return response()->json([
                 'errors' => [
                     'invalid' => 'Post does not exist'

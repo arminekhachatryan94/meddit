@@ -3,30 +3,33 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Contracts\UserContract;
-use App\Biography;
+use App\Contracts\BiographyContract;
 use Validator;
 
 class SettingsController extends Controller
 {
     protected $userService = null;
+    protected $biographyService = null;
 
-    public function __construct(UserContract $userService){
+    public function __construct(UserContract $userService, BiographyContract $biographyService){
         $this->userService = $userService;
+        $this->biographyService = $biographyService;
     }
 
     public function settings( $id ) {
-        $user = $this->userService->getUser($id);
-        if( $user ){
+        try {
+            $user = $this->userService->getUser($id);
             return response()->json([
                 'user' => $user
             ], 201);
-        } else {
+        } catch(ModelNotFoundException $e) {
             return response()->json([
                 'errors' => [
                     'invalid' => 'User does not exist'
                 ]
-            ], 401);
+            ], 404);
         }
     }
 
@@ -43,8 +46,7 @@ class SettingsController extends Controller
             ];
             if( auth()->attempt( $req ) ){
                 $user = $this->userService->getUser($id);
-                $user->username = $request->input('username');
-                $user->save();
+                $this->userService->updateUsername($user, $request->input('username'));
                 return response()->json([
                     'message' => 'Successfully changed username'
                 ], 201);
@@ -73,9 +75,8 @@ class SettingsController extends Controller
                 'password' => $request->input('password')
             ];
             if( auth()->attempt( $req ) ){
-                $user = Biography::where('user_id', $id)->first();
-                $user->description = $request->input('biography');
-                $user->save();
+                $bio = $this->biographyService->getBiography($id);
+                $this->biographyService->saveBiography($bio, $request->input('biography'));
                 return response()->json([
                     'message' => 'Successfully updated biography'
                 ], 201);

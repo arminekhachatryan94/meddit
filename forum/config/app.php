@@ -151,6 +151,12 @@ return [
         App\Providers\PostServiceProvider::class,
         /* user service provider */
         App\Providers\UserServiceProvider::class,
+        /* user role service provider */
+        App\Providers\UserRoleServiceProvider::class,
+        /* comment service provider */
+        App\Providers\CommentServiceProvider::class,
+        /* biography service provider */
+        App\Providers\BiographyServiceProvider::class,
 
         /*
          * Package Service Providers...
